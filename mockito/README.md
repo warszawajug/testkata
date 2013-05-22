@@ -7,15 +7,20 @@ Projekt jest budowany z wykorzystaniem narzędzia [Gradle](http://www.gradle.org
 nie jest konieczna jego wcześniejsza instalacja.
 
 Proste zbudowanie i wykonanie testów:
-./gradlew check
+
+    ./gradlew check
+
 (na platformie Windows zamiast gradlew należy użyć gradlew.bat)
 
 Import do IntelliJ Idea (zalecany):
-./gradlew idea
+
+    ./gradlew idea
+
 i potem otworzenie pliku test-kata-mockito.ipr przez File->Open
 
 Import do Eclipse (bez wsparcia prowadzącego):
-./gradlew eclipse
+
+    ./gradlew eclipse
 
 Autor: [Marcin Zajączkowski](http://blog.solidsoft.info/). Kod jest dostępny na
-[licencji Apache w wersji 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[licencji Apache w wersji 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
