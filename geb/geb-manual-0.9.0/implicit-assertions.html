@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Implicit Assertions - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="configuration.html">Configuration</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="javascript.html">Javascript, AJAX and Dynamic Pages</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>8</span><a href='implicit-assertions.html#implicit_assertions'>Implicit Assertions</a><ul><li><span class='toc_number'>8.1</span><a href='implicit-assertions.html#at_verification'>At Verification</a></li><li><span class='toc_number'>8.2</span><a href='implicit-assertions.html#waiting'>Waiting</a><ul><li><span class='toc_number'>8.2.1</span><a href='implicit-assertions.html#waiting_content'>Waiting Content</a></li></ul><span class='toc_number'>8.3</span><a href='implicit-assertions.html#how_it_works_'>How it works </a></li></ul></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='implicit_assertions'>8</span> Implicit Assertions</h1><p>As of Geb 0.7.0, certain parts of Geb utilise “<em>implicit assertions</em>”. This sole goal of this feature is to provide more informative error messages. Put simply it means that for a given block of code, all <em>expressions</em> are automatically turned into assertions. So the following code:</p>
+<pre><code>1 == 1
+</code></pre><p>Becomes…</p>
+<pre><code>assert 1 == 1
+</code></pre>
+<blockquote><p>If you&rsquo;ve used the <a href="http://spockframework.org/">Spock Framework</a> you will be well familiar with the concept of implicit assertions from Spock&rsquo;s <code>then:</code> blocks.</p>
+</blockquote><p>In Geb, waiting expressions and at expressions automatically use implicit assertions. Take the following page object…</p>
+<pre><code>class ImplicitAssertionsExamplePage extends Page {
+
+    static at = { title == &quot;Implicit Assertions!&quot; }
+
+    static content = {
+        dynamicParagraph(wait: true) { $(&quot;p&quot;, 0).text() == &quot;implicit assertions are cool!&quot; }
+    }
+
+    def waitForHeading() {
+        waitFor { $(&quot;h1&quot;) }
+    }
+}
+</code></pre><p>This automatically becomes…</p>
+<pre><code>class ImplicitAssertionsExamplePage extends Page {
+
+    static at = { assert title == &quot;Implicit Assertions!&quot; }
+
+    static content = {
+        dynamicParagraph(wait: true) { assert $(&quot;p&quot;, 0).text() == &quot;implicit assertions are cool!&quot; }
+    }
+
+    def waitForHeading() {
+        waitFor { assert $(&quot;h1&quot;) }
+    }
+}
+</code></pre><p>Because of this, Geb is able to provide much better error messages when the expression fails due to Groovy&rsquo;s <a href="http://dontmindthelanguage.wordpress.com/2009/12/11/groovy-1-7-power-assert/">power asserts</a>.</p><p><strong>Note:</strong> A special form of <code>assert</code> is used that returns the value of the expression, whereas a regular <code>assert</code> returns <code>null</code>. </p><p>This means that given…</p>
+<pre><code>static content = {
+    headingText(wait: true) { $(&quot;h1&quot;).text() }
+}
+</code></pre><p>Accessing <code>headingText</code> here will <em>wait</em> for there to be a <code>h1</code> and for it to have some text (because an <a href="http://docs.codehaus.org/display/GROOVY/Groovy+Truth">empty string is <code>false</code> in Groovy</a>), which will then be returned. This means that even when implicit assertions are used, the value is still returned and is is usable.</p><h2><span id='at_verification'>8.1</span> At Verification</h2><p>Let&rsquo;s take the <code>at</code> case.</p>
+<blockquote><p>If you&rsquo;re unfamiliar with Geb&rsquo;s “at checking”, please read <a href="pages.html#at_verification">this section</a>. </p>
+</blockquote><p>Consider the following small Geb script…</p>
+<pre><code>Browser.drive {
+    go ImplicitAssertionsExamplePage
+    at ImplicitAssertionsExamplePage
+}
+</code></pre><p>At checking works by verifying that the page&rsquo;s “at check” returns a <em>trueish</em> value. If it does, the <code>at()</code> method returns <code>true</code>. If not, the <code>at()</code> method will return <code>false</code>. However, due to implicit assertions, the “at check” will never return <code>false</code>. Instead, the at checker will throw an <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/AssertionError.html">AssertionError</a>. Because the page&rsquo;s “at check” is turned into an assertion, we&rsquo;ll get an error like:</p>
+<pre><code>Assertion failed: 
+
+title == &quot;Implicit Assertions!&quot;
+|     |
+|     false
+Something else
+
+    at ImplicitAssertionsExamplePage._clinit__closure1(ImplicitAssertionsExamplePage.groovy:3)
+    at ImplicitAssertionsExamplePage._clinit__closure1(ImplicitAssertionsExamplePage.groovy)
+    at geb.Page.verifyAt(Page.groovy:131)
+    at geb.Browser.doAt(Browser.groovy:335)
+    at geb.Browser.at(Browser.groovy:259)
+    at groovyscript(groovyscript.groovy:3)
+</code></pre><p>As you can see, this is much more informative than the <code>at()</code> method simply returning <code>false</code>.</p><h2><span id='waiting'>8.2</span> Waiting</h2><p>Another place where implicit assertions are utilised is for <em>waiting</em>.</p>
+<blockquote><p>If you&rsquo;re unfamiliar with Geb&rsquo;s “waiting” support, please read <a href="javascript.html#waiting">this section</a>.</p>
+</blockquote><p>Consider the following Geb script:</p>
+<pre><code>Browser.drive {
+    waitFor { title == &quot;Page Title&quot; }
+}
+</code></pre><p>The <code>waitFor</code> method verifies that the given clause returns a <em>trueish</em> value within a certain timeframe. Because of implicit assertions, when this fails the error will look something like this:</p>
+<pre><code>geb.waiting.WaitTimeoutException: condition did not pass in 5.0 seconds (failed with exception)
+    at geb.waiting.Wait.waitFor(Wait.groovy:128)
+    at geb.waiting.WaitingSupport.doWaitFor(WaitingSupport.groovy:108)
+    at geb.waiting.WaitingSupport.waitFor(WaitingSupport.groovy:84)
+    at geb.waiting.WaitingSupport.waitFor(WaitingSupport.groovy:80)
+    at geb.Browser.methodMissing(Browser.groovy:168)
+    at geb.test.GebSpec.methodMissing(GebSpec.groovy:80)
+    at groovyscript(groovyscript.groovy:2)
+Caused by: Assertion failed: 
+
+title == &quot;Page Title&quot;
+|     |
+|     false
+Something else
+
+    at geb.waiting.WaitingSupportSpec.failed waiting_closure4(WaitingSupportSpec.groovy:67)
+    at geb.waiting.WaitingSupportSpec.failed waiting_closure4(WaitingSupportSpec.groovy)
+    at geb.waiting.Wait.waitFor(Wait.groovy:117)
+    ... 6 more
+</code></pre><p>The failed assertion is carried as the cause of the <code>geb.waiting.WaitTimeoutException</code> and gives you an informative message as to why the waiting failed.</p><h3><span id='waiting_content'>8.2.1</span> Waiting Content</h3><p>The same implicit assertion semantics apply to content definitions that are waiting.</p>
+<blockquote><p>If you&rsquo;re unfamiliar with Geb&rsquo;s “waiting content” support, please read <a href="pages.html#wait">this section</a>.</p>
+</blockquote><p>Any content definitions that declare a <code>wait</code> parameter have implicit assertions added to each expression just like <code>waitFor()</code> method calls.</p><h2><span id='how_it_works_'>8.3</span> How it works</h2><p>The “implicit assertions” feature is implemented as a <a href="http://groovy.codehaus.org/Compile-time+Metaprogramming+-+AST+Transformations">Groovy compile time transformation</a>, which literally turns all <em>expressions</em> in a candidate block of code into assertions.</p><p>This transform is packaged as a separate jar named <code>geb-implicit-assertions</code>. This jar needs to be on the compilation classpath of your Geb test/pages/modules (and any other code that you want to use implicit assertions) in order for this feature to work.</p><p>If you are obtaining Geb via a dependency management system, this is typically not something you need to be concerned about as it will happen automatically. Geb is distributed via the Maven Central repository in Apache Maven format (i.e. via POM files). The main Geb module, <code>geb-core</code> depends on the <code>geb-implicit-assertions</code> module as a <code>compile</code> dependency. </p><p>If your dependency management system <em>inherits</em> transitive compile dependencies (i.e. also makes compile dependencies of first class compile dependencies first class compile dependencies) then you will automatically have the <code>geb-implicit-assertions</code> module as a compile dependency and everything will work fine (Maven, Gradle, Grails, and most configurations of Ivy do this). If your dependency management system does not do this, or if you are manually managing the <code>geb-core</code> dependency, be sure to include the <code>geb-implicit-assertions</code> dependency as a compile dependency.</p>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="configuration.html">Configuration</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="javascript.html">Javascript, AJAX and Dynamic Pages</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

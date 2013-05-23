@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Direct Downloading - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="javascript.html">Javascript, AJAX and Dynamic Pages</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="binding.html">Scripts and Binding</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>10</span><a href='downloading.html#direct_downloading'>Direct Downloading</a><ul><li><span class='toc_number'>10.1</span><a href='downloading.html#downloading_example'>Downloading Example</a></li><li><span class='toc_number'>10.2</span><a href='downloading.html#fine_grained_request'>Fine Grained Request</a></li><li><span class='toc_number'>10.3</span><a href='downloading.html#errors'>Errors</a></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='direct_downloading'>10</span> Direct Downloading</h1><p>Geb features an API that can be used to make direct HTTP requests from the application that is executing the Geb scripts or tests. This facilitates fine grained requests and downloading content such as PDF, CSVs, images etc. into your scripts or tests to then do something with. </p><p>The direct download API works by using <a href="http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html"><code>java.net.HttpURLConnection</code></a> to directly connect to a URL from the application executing Geb, bypassing WebDriver.</p><p>The Direct Download API is provided by the <a href="api/geb/download/DownloadSupport.html"><code>DownloadSupport</code></a> class, which is mixed in to pages and modules (which means you can just call these instance methods directly from anywhere where you would want to, e.g. drive blocks, in tests/specs, methods on page objects, methods on modules). Consult the <a href="api/geb/download/DownloadSupport.html"><code>DownloadSupport</code></a> API reference for the <code>download*</code> methods that are available.</p><h2><span id='downloading_example'>10.1</span> Downloading Example</h2><p>For example, let&rsquo;s say you are using Geb to exercise a web application that generates PDF documents. The WebDriver API can only deal with HTML documents. You want to hit the PDF download link and also do some tests on the downloaded PDF. The direct download API is there to fill this need.</p>
+<pre><code>Browser.drive {
+    go &quot;http://myapp.com/login&quot;
+
+    // login
+    username = &quot;me&quot;
+    password = &quot;secret&quot;
+    login().click()
+
+    // now find the pdf download link
+    def downloadLink = $(&quot;a.pdf-download-link&quot;)
+
+    // now get the pdf bytes
+    def bytes = downloadBytes(downloadLink.@href)
+}
+</code></pre><p>Simple enough, but consider what is happening behind the scenes. Our application required us to log in, which implies some kind of session state. Geb is using <a href="http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html"><code>HttpURLConnection</code></a> behind the scenes to get the content and before doing so the cookies from the real browser will be transferred allowing this connection to assume the same session. The PDF download link href may also be relative and Geb handles this by resolving the link passed to the download function against the browser&rsquo;s current page URL.</p><h2><span id='fine_grained_request'>10.2</span> Fine Grained Request</h2><p>The Direct Download API can also be used for making fine grained requests which can be useful for testing edge cases or abnormal behavior.</p><p>All of the <code>download*()</code> methods take an optional closure that can configure the <a href="http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html">java.net.HttpURLConnection</a> that will be used to make the request (after the <code>Cookie</code> header has been set).</p><p>For example, we could test what happens when we send gibberish in the <code>Accept-Encoding</code> header. </p>
+<pre><code>Browser.drive {
+    go &quot;http://myapp.com/somepage&quot;
+    downloadText { HttpURLConnection connection -&gt;
+        connection.setRequestProperty(&quot;Accept-Encoding&quot;, &quot;gibberish&quot;)
+    }
+}
+</code></pre>
+<blockquote><p>Before doing something like the above, it&rsquo;s worth considering whether doing such testing via Geb (a browser automation tool) is the right thing to do. You may find that it&rsquo;s more appropriate to directly use HttpURLConnection without Geb. That said, there are scenarios where such fine grained request control can be useful.</p>
+</blockquote><h2><span id='errors'>10.3</span> Errors</h2><p>Any IO type errors that occur during a download operation (e.g. HTTP 500 responses) will result in a <a href="api/geb/download/DownloadException.html"><code>DownloadException</code></a> being thrown that wraps the original exception and provides access to the HttpURLConnection used to make the request.</p>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="javascript.html">Javascript, AJAX and Dynamic Pages</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="binding.html">Scripts and Binding</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

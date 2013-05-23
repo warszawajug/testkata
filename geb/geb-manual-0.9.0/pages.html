@@ -1,0 +1,472 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Pages - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="navigator.html">Interacting with content</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="modules.html">Modules</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>5</span><a href='pages.html#pages'>Pages</a><ul><li><span class='toc_number'>5.1</span><a href='pages.html#the_page_object_pattern'>The Page Object pattern</a></li><li><span class='toc_number'>5.2</span><a href='pages.html#the_page_superclass'>The Page superclass</a></li><li><span class='toc_number'>5.3</span><a href='pages.html#the_content_dsl'>The Content DSL</a><ul><li><span class='toc_number'>5.3.1</span><a href='pages.html#template_options'>Template Options</a><ul><li><span class='toc_number'>5.3.1.1</span><a href='pages.html#required'>required</a></li><li><span class='toc_number'>5.3.1.2</span><a href='pages.html#cache'>cache</a></li><li><span class='toc_number'>5.3.1.3</span><a href='pages.html#to'>to</a></li><li><span class='toc_number'>5.3.1.4</span><a href='pages.html#wait'>wait</a></li><li><span class='toc_number'>5.3.1.5</span><a href='pages.html#page'>page</a></li></ul><span class='toc_number'>5.3.2</span><a href='pages.html#aliasing'>Aliasing</a></li></ul><span class='toc_number'>5.4</span><a href='pages.html#at_verification'>“At” Verification</a></li><li><span class='toc_number'>5.5</span><a href='pages.html#page_urls'>Page URLs</a></li><li><span class='toc_number'>5.6</span><a href='pages.html#advanced_page_navigation'>Advanced Page Navigation</a><ul><li><span class='toc_number'>5.6.1</span><a href='pages.html#named_params'>Named params</a></li></ul><span class='toc_number'>5.7</span><a href='pages.html#inheritance'>Inheritance</a></li><li><span class='toc_number'>5.8</span><a href='pages.html#lifecycle_hooks'>Lifecycle Hooks</a><ul><li><span class='toc_number'>5.8.1</span><a href='pages.html#onloadpage_previouspage'>onLoad(Page previousPage)</a></li><li><span class='toc_number'>5.8.2</span><a href='pages.html#onunloadpage_newpage'>onUnload(Page newPage)</a></li></ul><span class='toc_number'>5.9</span><a href='pages.html#dealing_with_frames'>Dealing with frames</a><ul><li><span class='toc_number'>5.9.1</span><a href='pages.html#executing_code_in_the_context_of_a_frame'>Executing code in the context of a frame</a></li><li><span class='toc_number'>5.9.2</span><a href='pages.html#switching_pages_and_frames_at_once'>Switching pages and frames at once</a></li></ul></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='pages'>5</span> Pages</h1>
+<blockquote><p>Before reading this page, please make sure you have read the <a href="browser.html#the_drive_method">section on the Browser.drive() method</a></p>
+</blockquote><h2><span id='the_page_object_pattern'>5.1</span> The Page Object pattern</h2>
+<pre><code>import geb.Browser
+
+Browser.drive {
+    go &quot;http://google.com/ncr&quot;
+    $(&quot;input[name=q]&quot;).value &quot;Chuck Norris&quot;
+    $(&quot;input[value=&#39;Google Search&#39;]&quot;).click()
+    waitFor { $(&quot;li.g&quot;, 0).find(&quot;a.l&quot;).text().contains(&quot;Chuck&quot;) }
+}
+</code></pre><p>This is valid Geb code, and it works well for a one off script but there are two big issues with this approach. Imagine that you have <em>many</em> tests that involve searching and checking results. The implementation of how to search and how to find the results is going to have to be duplicated in <em>every</em> test, maybe <em>many times</em> per test. As soon as something as trivial as the name of the search field changes you have to update a lot of code. The Page Object Pattern allows us to apply the same principles of modularity, reuse and encapsulation that we use in other aspects of programming to avoid such issues in browser automation code.</p><p>Here is the same script, utilising page objects…</p>
+<pre><code>import geb.*
+
+class GoogleHomePage extends Page {
+    static url = &quot;http://google.com/?complete=0&quot;
+    static at = { title == &quot;Google&quot; }
+    static content = {
+        searchField { $(&quot;input[name=q]&quot;) }
+        searchButton(to: GoogleResultsPage) { $(&quot;input[value=&#39;Google Search&#39;]&quot;) }
+    }
+}
+
+class GoogleResultsPage extends Page {
+    static at = { waitFor { title.endsWith(&quot;Google Search&quot;) } }
+    static content = {
+        results(wait: true) { $(&quot;li.g&quot;) }
+        result { index -&gt; results[index] }
+        resultLink { index -&gt; result(index).find(&quot;a.l&quot;) }
+    }
+}
+
+// Now the script
+Browser.drive {
+    to GoogleHomePage
+    searchField().value &quot;Chuck Norris&quot;
+    searchButton().click()
+    at GoogleResultsPage
+    resultLink(0).text().contains(&quot;Chuck&quot;)
+}
+</code></pre><p>You have now encapsulated, in a reusable fashion, information about each page and how to interact with it. As anyone who has tried to knows, maintaining a large suite of functional web tests for a changing application can become an expensive and frustrating process. Geb&rsquo;s support for the Page Object pattern addresses this problem.</p><h2><span id='the_page_superclass'>5.2</span> The Page superclass</h2><p>All page objects <strong>must</strong> inherit from <a href="api/geb/Page.html"><code>Page</code></a>.</p><h2><span id='the_content_dsl'>5.3</span> The Content DSL</h2><p>Geb features a DSL for defining page content in a <em>templated</em> fashion, which allows very concise yet flexible page definitions. Pages define a <code>static</code> closure property called <code>content</code> that describes the page content. </p><p>Consider the following HTML…</p>
+<pre><code>&lt;div id=&quot;a&quot;&gt;a&lt;/div&gt;
+</code></pre><p>We could define this content as so…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDiv { $(&#39;div&#39;, id: &#39;a&#39;) }
+    }
+}
+</code></pre><p>The structure to the content DSL is…</p>
+<pre><code>«name» { «definition» }
+</code></pre><p>Where <code>«definition»</code> is Groovy code that is evaluated against the instance of the page.</p><p>Here is how it could be used…</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+    assert theDiv.text() == &quot;a&quot;
+}
+</code></pre><p>So how is this working? First, remember that the <code>Browser</code> instance delegates any method calls or property accesses that it doesn&rsquo;t know about to the current page instance. So the above code is the same as…</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+    assert page.theDiv.text() == &quot;a&quot;
+}
+</code></pre><p>Secondly, defined content becomes available as properties and methods on instance of the page…</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+
+    // Following two lines are equivalent
+    assert theDiv.text() == &quot;a&quot;
+    assert theDiv().text() == &quot;a&quot;
+}
+</code></pre><p>The Content DSL actually defines content <em>templates</em>. This is best illustrated by example…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDiv { id -&gt; $(&#39;div&#39;, id: id) }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    assert theDiv(&quot;a&quot;).text() == &quot;a&quot;
+}
+</code></pre><p>There are no restrictions on what arguments can be passed to content templates.</p><p>A content template can return <em>anything</em>. Typically they will return a <a href="api/geb/navigator/Navigator.html"><code>Navigator</code></a> object through the use of the <code>$()</code> function, but it can be anything.</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDivText { $(&#39;div#a&#39;).text() }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    assert theDivText == &quot;a&quot;
+}
+</code></pre><p>It&rsquo;s important to realise that <code>«definition»</code> code is evaluated against the page instance. This allows code like the following…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDiv { $(&#39;div#a&#39;) }
+        theDivText { theDiv.text() }
+    }
+}
+</code></pre><p>And this is not restricted to other content…</p>
+<pre><code>class ExamplePage extends Page {
+    def divId = a
+    static content = {
+        theDiv { $(&#39;div&#39;, id: divId) }
+        theDivText { theDiv.text() }
+    }
+}
+</code></pre><p>Or…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDiv { $(&#39;div&#39;, id: getDivId()) }
+        theDivText { theDiv.text() }
+    }
+    def getDivId() {
+        &quot;a&quot;
+    }
+}
+</code></pre><h3><span id='template_options'>5.3.1</span> Template Options</h3><p>Template definitions can take different options. The syntax is…</p>
+<pre><code>«name»(«options map») { «definition» }
+</code></pre><p>For example…</p>
+<pre><code>theDiv(cache: false, required: false) { $(&quot;div&quot;, id: &quot;a&quot;) }
+</code></pre><p>The following are the available options.</p><h4><span id='required'>5.3.1.1</span> required</h4><p>Default value: <code>true</code></p><p>The <code>required</code> option controls whether or not the content returned by the definition has to exist or not. This is only relevant when the definition returns a <code>Navigator</code> object (via the <code>$()</code> function), it is ignored if the definition returns anything else.</p><p>If the <code>required</code> option is set to <code>true</code> and the returned content does not exist, a <a href="api/geb/error/RequiredPageContentNotPresent.html"><code>RequiredPageContentNotPresent</code></a> exception will be thrown.</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theDiv { $(&#39;div&#39;, id: &quot;b&quot;) }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    def thrown = false
+    try {
+        theDiv
+    } catch (RequiredPageContentNotPresent e) {
+        thrown = true
+    }
+    assert thrown
+}
+</code></pre><h4><span id='cache'>5.3.1.2</span> cache</h4><p>Default value: <code>false</code></p><p>The <code>cache</code> option controls whether or not the definition is evaluated each time the content is requested (the content is cached for each unique set of parameters). </p>
+<pre><code>class ExamplePage extends Page {
+    def value = 1
+    static content = {
+        theValue(cache: true) { value }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    assert theValue == 1
+    value = 2
+    assert theValue == 1
+}
+</code></pre><p>With caching disabled…</p>
+<pre><code>class ExamplePage extends Page {
+    def value = 1
+    static content = {
+        theValue(cache: false) { value }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    assert theValue == 1
+    value = 2
+    assert theValue == 2
+}
+</code></pre><p>Caching is a performance optimisation and is disabled by default. You may want to enable if you notice that the a particular content definition is taking a long time to resolve.</p><h4><span id='to'>5.3.1.3</span> to</h4><p>Default value: <code>null</code></p><p>The <code>to</code> option allows the definition of which page the browser will be sent to if the content is clicked.</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        helpLink(to: HelpPage) { $(&quot;a&quot;, text: &quot;Help&quot;) }
+    }
+}
+
+class HelpPage extends Page {}
+
+Browser.drive {
+    to ExamplePage
+    helpLink.click()
+    assert at(HelpPage)
+}
+</code></pre><p>The <code>to</code> value will be implicitly used as an argument to the content&rsquo;s <code>click()</code> method, effectively setting the new page type and verifying its at checker. See the section on <a href="navigator.html#clicking">clicking content</a> for how this changes the browser&rsquo;s page object.</p><p>The list variant can also be used…</p>
+<pre><code>static content = {
+    loginButton(to: [LoginSuccessfulPage, LoginFailedPage]) { $(&quot;input.loginButton&quot;) }
+}
+</code></pre><p>Which on click sets the brower&rsquo;s page to be the first page in the list whose at checker returns true. This is equivalent to the <a href="api/geb/Browser.html#page(Class[])"><code>page(Class[] potentialPageTypes)</code> browser method</a> which is explained in the section on<br/><a href="browser.html#changing_the_page">changing pages</a>.</p><h4><span id='wait'>5.3.1.4</span> wait</h4><p>Default value: <code>false</code></p><p>The <code>wait</code> option allows Geb to wait an amount of time for content to appear on the page, instead of throwing a <a href="api/geb/error/RequiredPageContentNotPresent.html"><code>RequiredPageContentNotPresent</code></a> exception if the content is not present when requested.</p>
+<pre><code>class DynamicPage extends Page {
+    static content = {
+        dynamicallyAdded(wait: true) { $(&quot;p.dynamic&quot;) }
+    }
+}
+
+Browser.drive {
+    to DynamicPage
+    assert dynamicallyAdded.text() == &quot;I&#39;m here now&quot;
+}
+</code></pre><p>This is equivalent to:</p>
+<pre><code>class DynamicPage extends Page {
+    static content = {
+        dynamicallyAdded(required: false) { $(&quot;p.dynamic&quot;) }
+    }
+}
+
+Browser.drive {
+    to DynamicPage
+    assert waitFor { dynamicallyAdded }.text() == &quot;I&#39;m here now&quot;
+}
+</code></pre><p>See the <a href="javascript.html#waiting">section on waiting</a> for the semantics of the <code>waitFor()</code> method, that is used here internally. Like <code>waitFor()</code> a <a href="api/geb/waiting/WaitTimeoutException.html"><code>WaitTimeoutException</code></a> will be thrown if the wait timeout expires.</p><p>The value for the <code>wait</code> option can be one of the following:</p>
+<ul>
+  <li><strong><code>true</code></strong> - wait for the content using the <em>default wait</em> configuration</li>
+  <li><strong>a string</strong> - wait for the content using the <em>wait preset</em> with this name from the configuration</li>
+  <li><strong>a number</strong> - wait for the content for this many seconds, using the <em>default retry interval</em> from the configuration</li>
+  <li><strong>a 2 element list of numbers</strong> - wait for the content using element 0 as the timeout seconds value, and element 1 as the retry interval seconds value</li>
+</ul><p>Any other value will be interpreted as <code>false</code>.</p><p>It is also possible to use <code>wait</code> when defining non element content, such as a string or number. Geb will wait until the content definition returns a value that conforms to the Groovy Truth.</p>
+<pre><code>class DynamicPage extends Page {
+    static content = {
+        status { $(&quot;p.status&quot;) }
+        successStatus(wait: true) { status.text().contains(&quot;Success&quot;) }
+    }
+}
+
+Browser.drive {
+    to DynamicPage
+    assert successStatus
+}
+</code></pre><p>In this case, we are inherently waiting for the <code>status</code> content to be on the page and for it to contain the string “Success”. If the <code>status</code> element is not present when we request <code>successStatus</code>, the <a href="api/geb/error/RequiredPageContentNotPresent.html"><code>RequiredPageContentNotPresent</code></a> exception that would be thrown is swallowed and Geb will try again after the retry interval has expired.</p><p>You can modify the behaviour of content with <code>wait</code> option set to true if you use it together with <code>required</code> option set to false. Given a content definition:</p>
+<pre><code>static content = {
+    dynamicallyAdded(wait: true, required: false) { $(&quot;p.dynamic&quot;) }
+}
+</code></pre><p>Then if wait timeout expires when retrieving <code>dynamicallyAdded</code> there will be no <code>WaitTimeoutException</code> thrown and the last closure evaluation value will be returned. If there is an exception thrown during closure evaluation it will be wrapped in an <a href="api/geb/waiting/UnknownWaitForEvaluationResult.html"><code>UnknownWaitForEvaluationResult</code></a> instance and returned.</p><p>Waiting content blocks are subject to “implicit assertions”. See the section on <a href="implicit-assertions.html">implicit assertions</a> for more information.</p><h4><span id='page'>5.3.1.5</span> page</h4><p>Default value: <code>null</code></p><p>The <code>page</code> option allows the definition of a page the browser will be set to if the content describes a frame and is used in a <code>withFrame()</code> call.</p><p>Given the following html&hellip;</p>
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;frame id=&quot;frame-id&quot; src=&quot;frame.html&quot;&gt;&lt;/frame&gt;
+    &lt;body&gt;
+&lt;/html&gt;
+</code></pre><p>&hellip;and the code for frame.html&hellip;</p>
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;span&gt;frame text&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>&hellip;the following will pass&hellip;</p>
+<pre><code>class PageWithFrame extends Page {
+    static content = {
+        myFrame(page: FrameDescribingPage) { $(&#39;#frame-id&#39;) }
+    }
+}
+
+class FrameDescribingPage extends Page {
+    static content = {
+        frameContentsText { $(&#39;span&#39;).text() }
+    }
+}
+
+to PageWithFrame
+withFrame(myFrame) {
+    assert frameContentsText == &#39;frame text&#39;
+}
+</code></pre><h3><span id='aliasing'>5.3.2</span> Aliasing</h3><p>If you wish to have the same content definitions available under diferent names you can create a content definition that specifies <code>aliases</code> parameter:</p>
+<pre><code>class AliasingPage extends Page {
+    static content = {
+       someButton { $(&quot;button&quot;, text: &quot;foo&quot;) }
+       someButtonByAnotherName(aliases: someButton)
+    }
+}
+
+Browser.drive {
+    to AliasingPage
+    assert someButton.text() == someButtonByAnotherName.text()
+}
+</code></pre><p>Remember that the aliased content has to be defined before the aliasing content, otherwise you will get a <a href="api/geb/error/InvalidPageContent.html"><code>InvalidPageContent</code></a> exception.</p><h2><span id='at_verification'>5.4</span> “At” Verification</h2><p>Each page can define a way to check whether the underling browser is at the page that the page class actually represents. This is done via a <code>static</code> <code>at</code> closure…</p>
+<pre><code>class ExamplePage extends Page {
+    static at = { $(&quot;h1&quot;).text() == &quot;Example&quot; }
+}
+</code></pre><p>This closure can either return a <code>false</code> value or throw an <code>AssertionError</code> (via the <code>assert</code> method). The <code>verifyAt()</code> method call will either return true or throw an <code>AssertionError</code> even if there are no explicit assertions in the “at” checker.</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+    verifyAt()
+}
+</code></pre><p>The <code>verifyAt()</code> method is used by the browser <code>at()</code> method which also returns true or throws an <code>AssertionError</code> even if there are no explicit assertions in the “at” checker…</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+    at(ExamplePage)
+}
+</code></pre><p>At checkers are subject to “implicit assertions”. See the section on <a href="implicit-assertions.html">implicit assertions</a> for more information.</p><p>If you don&rsquo;t wish to get an exception when “at” checking fails there are methods that return <code>false</code> in that case: <a href="api/geb/Page.html#verifyAtSafely()"><code>Page#verifyAtSafely()</code></a> and <a href="api/geb/Browser.html#isAt(java.lang.Class)"><code>Browser#isAt(Class&lt;? extends Page&gt;)</code></a>.</p><p>As mentioned previously, when a content template defines a “to” option of more than one page the page&rsquo;s <code>verifyAt()</code> method is used to determine which one of the pages to use. In this situation, any <code>AssertionError</code>s thrown by at checkers are suppressed.</p><p>The “at” checker is evaluated against the page instance, and can access defined content or any other variables or methods…</p>
+<pre><code>class ExamplePage extends Page {
+    static at = { heading == &quot;Example&quot; }
+    static content = {
+        heading { $(&quot;h1&quot;).text() }
+    }
+}
+</code></pre><p>If a page does not verify an “at” checker, the <code>verifyAt()</code> method will always return <code>true</code>.</p><h2><span id='page_urls'>5.5</span> Page URLs</h2><p>Pages can define URLs via the <code>static</code> <code>url</code> property.</p>
+<pre><code>class ExamplePage extends Page {
+    static url = &quot;examples&quot;
+}
+</code></pre><p>The url is used when using the browser <code>to()</code> method.</p>
+<pre><code>Browser.drive {
+    go &quot;http://myapp.com/&quot;
+    to ExamplePage
+}
+</code></pre><p>See the section on <a href="browser.html#the_base_url">the base url</a> for notes about urls and slashes.</p><h2><span id='advanced_page_navigation'>5.6</span> Advanced Page Navigation</h2><p>Page classes can customise how they generate URLs when used in conjunction with the browser <code>to()</code> method. </p><p>Consider the following example…</p>
+<pre><code>import geb.*
+
+class ExamplePage extends Page {
+    static url = &quot;example&quot;
+}
+
+Browser.drive(&quot;http://myapp.com/&quot;) {
+    to ExamplePage
+}
+</code></pre><p>This will result in a request being made to “<code>http://myapp.com/example</code>”. </p><p>The <code>to()</code> method can also take arguments…</p>
+<pre><code>Browser.drive(&quot;http://myapp.com&quot;) {
+    to ExamplePage, 1, 2
+}
+</code></pre><p>This will result in a request being made to “<code>http://myapp.com/example/1/2</code>”. This is because by default, any arguments passed to the <code>to()</code> method after the page class are converted to a URL path by calling <code>toString()</code> on each argument and joining them with “<code>/</code>”. </p><p>However, this is extensible. You can specify how a set of arguments is converted to a URL path to be added to the page URL. This is done by overriding the <a href="api/geb/Page.html#convertToPath(Object[])"><code>convertToPath()</code></a> method.<br/>The <a href="api/geb/Page.html"><code>Page</code></a> implementation of this method looks like this…</p>
+<pre><code>String convertToPath(Object[] args) {
+    args ? &#39;/&#39; + args*.toString().join(&#39;/&#39;) : &quot;&quot;
+}
+</code></pre><p>You can either overwrite this catch all method control path conversion for all invocations, or provide an overloaded version for a specific type signature. Consider the following…</p>
+<pre><code>class Person {
+    Long id
+    String name
+}
+
+class PersonPage {
+    static url = &quot;person&quot;
+
+    String convertToPath(Person person) {
+        person.id.toString()
+    }
+}
+
+def newPerson = new Person(id: 5, name: &quot;Bruce&quot;)
+
+Browser.drive {
+    go &quot;http://myapp.com/&quot;
+    to PersonPage, newPerson
+}
+</code></pre><p>This will result in a request to “<code>http://myapp.com/person/5</code>”.</p><h3><span id='named_params'>5.6.1</span> Named params</h3><p>Any type of argument can be used with the <code>to()</code> method, <strong>except</strong> named parameters (i.e. a <code>Map</code>). Named parameters are <strong>always</strong> interpreted as query parameters. Using the classes from the above example…</p>
+<pre><code>Browser.driver {
+    go &quot;http://myapp.com/&quot;
+    to PersonPage, newPerson, flag: true
+}
+</code></pre><p>This will result in a request to “<code>http://myapp.com/person/5?flag=true</code>”. The query parameters are <strong>not</strong> sent to the <a href="api/geb/Page.html#convertToPath(Object[])"><code>convertToPath()</code></a> method.</p><h2><span id='inheritance'>5.7</span> Inheritance</h2><p>Pages can be arranged in an inheritance hierarchy. The content definitions are merged…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        heading { $(&quot;h1&quot;) }
+    }
+}
+
+class SpecialExamplePage extends ExamplePage {
+    static content = {
+        footer { $(&quot;div.footer&quot;) }
+    }
+}
+
+Browser.drive {
+    to SpecialExamplePage
+    assert heading.text() == &quot;Special Example&quot;
+    assert footer.text() == &quot;This is the footer&quot;
+}
+</code></pre><p>If a subclass defines a content template with the same name as a content template defined in a superclass, the subclass version replaces the version from the superclass.</p><h2><span id='lifecycle_hooks'>5.8</span> Lifecycle Hooks</h2><p>Page classes can optionally implement methods that are called when the page is set as the browser&rsquo;s current page and when it is swapped out for another page. This can be used to transfer state between pages.</p><h3><span id='onloadpage_previouspage'>5.8.1</span> onLoad(Page previousPage)</h3><p>The <code>onLoad()</code> method is called with previous page object instance when the page becomes the new page object for a browser.</p>
+<pre><code>import geb.*
+
+class SomePage extends Page {
+    void onLoad(Page previousPage) {
+        // do some stuff with the previous page
+    }
+}
+</code></pre><h3><span id='onunloadpage_newpage'>5.8.2</span> onUnload(Page newPage)</h3><p>The <code>onUnload()</code> method is called with next page object instance when the page is being replaced as the page object for the browser.</p>
+<pre><code>import geb.*
+
+class SomePage extends Page {
+    void onUnload(Page newPage) {
+        // do some stuff with the new page
+    }
+}
+</code></pre><h2><span id='dealing_with_frames'>5.9</span> Dealing with frames</h2><p>Frames might seem a thing of the past but if you&rsquo;re accessing or testing some legacy application with Geb you might still need to deal with them. Thankfully Geb makes working with them groovier thanks to the <code>withFrame()</code> method which is available on Browser, Page and Module.</p><h3><span id='executing_code_in_the_context_of_a_frame'>5.9.1</span> Executing code in the context of a frame</h3><p>There are multiple flavours of the <code>withFrame()</code> method, but the for all of them the closure parameter is executed in the context of a frame specified by the first parameter and after the execution the browser page is restored to what it was before the call:</p>
+<ul>
+  <li><code>withFrame(String, Closure)</code> - String parameter contains the name or id of a frame element</li>
+  <li><code>withFrame(int, Closure)</code> - int parameter contains the index of the frame element, that is, if a page has three frames, the first frame would be at index “0”, the second at index “1” and the third at index “2”</li>
+  <li><code>withFrame(Navigator, Closure)</code> - Navigator parameter should point to a frame element</li>
+  <li><code>withFrame(SimplePageContent, Closure)</code> - SimplePageContent should contain a frame element</li>
+</ul><p>Given the following html&hellip;</p>
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;frame name=&quot;header&quot; src=&quot;frame.html&quot;&gt;&lt;/frame&gt;
+        &lt;frame id=&quot;footer&quot; src=&quot;frame.html&quot;&gt;&lt;/frame&gt;
+        &lt;iframe id=&quot;inline&quot; src=&quot;frame.html&quot;&gt;&lt;/iframe&gt;
+        &lt;span&gt;main&lt;/span&gt;
+    &lt;body&gt;
+&lt;/html&gt;
+</code></pre><p>&hellip;and the code for frame.html&hellip;</p>
+<pre><code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;span&gt;frame text&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>&hellip;then this code will pass&hellip;</p>
+<pre><code>static content = {
+    footerFrame { $(&#39;#footer&#39;) }
+}
+
+withFrame(&#39;header&#39;) { assert $(&#39;span&#39;) == &#39;frame text&#39; }
+withFrame(&#39;footer&#39;) { assert $(&#39;span&#39;) == &#39;frame text&#39; }
+withFrame(0) { assert $(&#39;span&#39;) == &#39;frame text&#39; }
+withFrame($(&#39;#footer&#39;)) { assert $(&#39;span&#39;) == &#39;frame text&#39; }
+withFrame(footerFrame) { assert $(&#39;span&#39;) == &#39;frame text&#39; }
+
+assert $(&#39;span&#39;) == &#39;main&#39;
+</code></pre><p>If a frame cannot be found for a given first argument of the <code>withFrame()</code> call then <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/NoSuchFrameException.html"><code>NoSuchFrameException</code></a> is thrown.</p><h3><span id='switching_pages_and_frames_at_once'>5.9.2</span> Switching pages and frames at once</h3><p>All of the aforementioned <code>withFrame()</code> variants also accept an optional second argument (a page class) which allows to switch page for the execution of the closure passed as the last parameter.</p><p>Following shows an example usage:</p>
+<pre><code>to PageWithFrames
+//browser.page set to a PageWithFrames instance
+
+withFrame(&#39;frame-name&#39;, PageDescribingFrameContents) {
+    //browser.page set to a PageDescribingFrameContents instance
+}
+
+//browser.page set back to the PageWithFrames instance
+</code></pre><p>It is also possible to <a href="pages.html#page">specify a page to switch to for a page content that describes a frame</a>.</p>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="navigator.html">Interacting with content</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="modules.html">Modules</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

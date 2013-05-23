@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Reporting - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="binding.html">Scripts and Binding</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="testing.html">Testing</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>12</span><a href='reporting.html#reporting'>Reporting</a><ul><li><span class='toc_number'>12.1</span><a href='reporting.html#the_report_group'>The report group</a></li><li><span class='toc_number'>12.2</span><a href='reporting.html#listening_to_reporting'>Listening to reporting</a></li><li><span class='toc_number'>12.3</span><a href='reporting.html#cleaning'>Cleaning</a></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='reporting'>12</span> Reporting</h1><p>Geb includes a simple reporting mechanism which can be used to snapshot the state of the browser at any point in time. Reporters are implementations of the <a href="api/geb/report/Reporter.html"><code>Reporter</code></a> interface. Geb ships with two implementations; <a href="api/geb/report/PageSourceReporter.html"><code>PageSourceReporter</code></a> and <a href="api/geb/report/ScreenshotReporter.html"><code>ScreenshotAndPageSourceReporter</code></a>. There are three bits of configuration that pertain to reporting; the <a href="configuration.html#reporter">reporter</a> implementation, the <a href="configuration.html#reports_dir">reports directory</a> and whether to <a href="configuration.html#report_test_failures_only">only report test failures</a> or not.</p><p>If no reporter is explicitly defined, a <a href="api/geb/report/CompositeReporter.html">composite reporter</a> will be created from a <code>ScreenshotReporter</code> (takes a PNG screenshot) and <code>PageSourceReporter</code> (dumps the current DOM state as HTML).</p><p>You take a report by calling the <a href="api/geb/Browser.html#report(java.lang.String)"><code>report(String label)</code></a> method on the browser object.</p>
+<pre><code>Browser.drive {
+    go &quot;http://google.com&quot;
+    report &quot;google home page&quot;
+}
+</code></pre>
+<blockquote><p>The <code>report()</code> method will thrown an exception if it is called and there is no configured <code>reportsDir</code>. If you are going to use reporting you <strong>must</strong> specify a <code>reportsDir</code> via config.</p>
+</blockquote><p>Assuming that we configured a <code>reportsDir</code> of “<code>reports/geb</code>”, after running this script we will find two files in this directory:</p>
+<ul>
+  <li><code>001-google home page.html</code> - A html dump of the page source</li>
+  <li><code>001-google home page.png</code> - A screenshot of the browser as a PNG file (if the driver implementation supports this)</li>
+</ul>
+<blockquote><p>To avoid issues with reserved characters in filenames, Geb replaces any character in the report name that is not an alphanumeric, a space or a hyphen with an underscore.</p>
+</blockquote><h2><span id='the_report_group'>12.1</span> The report group</h2><p>The configuration mechanism allows you to specify the base <code>reportsDir</code> which is where reports are written to by default. It is also possible to change the <a href="api/geb/Browser.html#reportGroup(java.lang.String)">report group</a> to a relative path inside this directory.</p>
+<pre><code>Browser.drive {
+    reportGroup &quot;google&quot;
+    go &quot;http://google.com&quot;
+    report &quot;home page&quot;
+
+    reportGroup &quot;wikipedia&quot;
+    go &quot;http://wikipedia.org&quot;
+    report &quot;home page&quot;
+}
+</code></pre><p>We have now created the following files inside the <code>reportsDir</code>…</p>
+<ul>
+  <li><code>google/home page.html</code></li>
+  <li><code>google/home page.png</code></li>
+  <li><code>wikipedia/home page.html</code></li>
+  <li><code>wikipedia/home page.png</code></li>
+</ul><p>The browser will create the directory for the report group as needed. By default, the report group is not set which means that reports are written to the base of the <code>reportsDir</code>. To go back to this after setting a report group, simply call <code>reportGroup(null)</code>.</p>
+<blockquote><p>It is common for test integrations to manage the report group for you, setting it to the name of the test class.</p>
+</blockquote><h2><span id='listening_to_reporting'>12.2</span> Listening to reporting</h2><p>It is possible to register a listener on the reporter that gets notified when a report is taken. This was added to make it possible to write something to stdout when a report is taken, which is how the <a href="https://wiki.jenkins-ci.org/display/JENKINS/JUnit+Attachments+Plugin">Jenkins JUnit Attachments Plugin</a> makes it possible to associate arbitrary files to test execution. Reporting listeners are of type <a href="api/geb/report/ReportingListener.html"><code>ReportingListener</code></a> can be specified as part of the config…</p>
+<pre><code>reportingListener = new ReportingListener() {
+  void onReport(Reporter reporter, ReportState reportState, List&lt;File&gt; reportFiles) {
+    reportFiles.each {
+      println &quot;[[ATTACHMENT|$it.absolutePath]]&quot;
+    }
+  }
+}
+</code></pre><h2><span id='cleaning'>12.3</span> Cleaning</h2><p>Geb does not automatically clean the reports dir for you. It does however provide a method that you can call to do this.</p>
+<pre><code>Browser.drive {
+    cleanReportGroupDir()
+    go &quot;http://google.com&quot;
+    report &quot;home page&quot;
+}
+</code></pre><p>The <a href="api/geb/Browser.html#cleanReportGroupDir()"><code>cleanReportGroupDir()</code></a> method will remove whatever the reports group dir is set to at the time. If it cannot do this it will throw an exception.</p>
+<blockquote><p>The Spock, JUnit and TestNG test integrations <strong>do</strong> automatically clean the reports dir for you, see the <a href="testing.html#reporting">section in the testing chapter</a> on these integrations.</p>
+</blockquote>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="binding.html">Scripts and Binding</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="testing.html">Testing</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

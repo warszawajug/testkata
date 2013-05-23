@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Javascript, AJAX and Dynamic Pages - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="implicit-assertions.html">Implicit Assertions</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="downloading.html">Direct Downloading</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>9</span><a href='javascript.html#javascript_ajax_and_dynamic_pages'>Javascript, AJAX and Dynamic Pages</a><ul><li><span class='toc_number'>9.1</span><a href='javascript.html#the_js_object'>The “js” object</a><ul><li><span class='toc_number'>9.1.1</span><a href='javascript.html#accessing_variables'>Accessing Variables</a></li><li><span class='toc_number'>9.1.2</span><a href='javascript.html#calling_methods'>Calling Methods</a></li><li><span class='toc_number'>9.1.3</span><a href='javascript.html#executing_arbitrary_code'>Executing Arbitrary Code</a></li></ul><span class='toc_number'>9.2</span><a href='javascript.html#waiting'>Waiting</a><ul><li><span class='toc_number'>9.2.1</span><a href='javascript.html#examples'>Examples</a></li><li><span class='toc_number'>9.2.2</span><a href='javascript.html#custom_message'>Custom message</a></li></ul><span class='toc_number'>9.3</span><a href='javascript.html#alert_and_confirm_dialogs'>Alert and Confirm Dialogs</a><ul><li><span class='toc_number'>9.3.1</span><a href='javascript.html#alert'>alert()</a></li><li><span class='toc_number'>9.3.2</span><a href='javascript.html#confirm'>confirm()</a></li><li><span class='toc_number'>9.3.3</span><a href='javascript.html#about_prompt'>About prompt()</a></li></ul><span class='toc_number'>9.4</span><a href='javascript.html#jquery_integration'>jQuery Integration</a><ul><li><span class='toc_number'>9.4.1</span><a href='javascript.html#why'>Why?</a></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='javascript_ajax_and_dynamic_pages'>9</span> Javascript, AJAX and Dynamic Pages</h1><p>This section discusses how to deal with some of the challenges in testing and/or automating modern web applications.</p><h2><span id='the_js_object'>9.1</span> The “js” object</h2><p>The browser instance exposes a “<a href="api/geb/Browser.html#getJs()"><code>js</code></a>” object that provides support for working with Javascript over and above what WebDriver provides.<br/>It&rsquo;s important to understand how WebDriver does handle Javascript, which is through a driver&rsquo;s implementation of <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html"><code>JavascriptExecutor</code></a>&rsquo;s [<code>executeScript()</code>](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String</a>, java.lang.Object[])) method. </p>
+<blockquote><p>Before reading further, it&rsquo;s <strong>strongly</strong> recommended to read the description of [<code>executeScript()</code>](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String</a>, java.lang.Object[])) in order to understand how type conversion works between the two worlds.</p>
+</blockquote><p>You can execute Javascript like you would with straight WebDriver using the driver instance via the browser…</p>
+<pre><code>assert browser.driver.executeScript(&quot;return arguments[0];&quot;, 1) == 1
+</code></pre><p>This is a bit long winded, and as you would expect Geb uses the dynamism of Groovy to make life easier.</p>
+<blockquote><p>The <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html">JavascriptExecutor</a> interface does not define any contract in regards to the driver&rsquo;s responsibility when there is some issue executing Javascript. All drivers however throw <em>some kind</em> of exception when this happens.</p>
+</blockquote><h3><span id='accessing_variables'>9.1.1</span> Accessing Variables</h3><p>Any <em>global</em> javascript variables inside the browser can be read as <em>properties</em> of the <code>js</code> object.</p><p>Given the following page…</p>
+<pre><code>&lt;html&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        var aVariable = 1;
+    &lt;/script&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>We could access the javascript variable “<code>aVariable</code>” with…</p>
+<pre><code>Browser.drive {
+    assert js.aVariable == 1
+}
+</code></pre><p>Or if we wanted to map it to page content…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        aVar { js.aVariable }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    assert aVar == 1
+}
+</code></pre><p>We can even access <em>nested</em> variables…</p>
+<pre><code>assert js.&quot;document.title&quot; == &quot;Book of Geb&quot;
+</code></pre><h3><span id='calling_methods'>9.1.2</span> Calling Methods</h3><p>Any <em>global</em> javascript functions can be called as methods on the <code>js</code> object.</p><p>Given the following page…</p>
+<pre><code>&lt;html&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        function addThem(a,b) {
+            return a + b;
+        }
+    &lt;/script&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>We can call the <code>addThem()</code> function with…</p>
+<pre><code>Browser.drive {
+    assert js.addThem(1, 2) == 3
+}
+</code></pre><p>This also works from pages and modules.</p><p>To call <em>nested</em> methods, we use the same syntax as properties…</p>
+<pre><code>Browser.drive {
+    js.&quot;document.write&quot;(&quot;dynamic!&quot;)
+}
+</code></pre><h3><span id='executing_arbitrary_code'>9.1.3</span> Executing Arbitrary Code</h3><p>The <code>js</code> object also has an <code>exec()</code> method that can be used to run snippets of Javascript. It is identical to the [JavascriptExecutor.executeScript()](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String</a>, java.lang.Object[])) method, except that it takes its arguments in the other order…</p>
+<pre><code>assert js.exec(1, 2, &quot;return arguments[0] + arguments[1];&quot;) == 3
+</code></pre><p>You might be wondering why the order has been changed (i.e. the arguments go <em>before</em> the script). It makes writing multiline javascript more convenient…</p>
+<pre><code>js.exec 1, 2, &quot;&quot;&quot;
+    someJsMethod();
+    // lots of javascript
+    return true;
+&quot;&quot;&quot;
+</code></pre><h2><span id='waiting'>9.2</span> Waiting</h2><p>Geb provides some convenient methods for <em>waiting</em> for a certain condition to be true. This is useful for testing pages using AJAX, timers or effects.</p><p>The <code>waitFor</code> methods are provided by the <a href="api/geb/waiting/WaitingSupport.html"><code>WaitingSupport</code></a> mixin which delegates to the <a href="api/geb/waiting/Wait.html"><code>Wait</code> class</a> (see the documentation of the <a href="api/geb/waiting/Wait.html#waitFor(groovy.lang.Closure)"><code>waitFor</code> method</a> of this class for the precise semantics of <em>waiting</em>). These methods take various parameters that determine how long to wait for the given closure to return a true object according to the <a href="http://groovy.codehaus.org/Groovy+Truth" title="Groovy - Groovy Truth">Groovy Truth</a>, and how long to wait in between invoking the closure again.</p>
+<pre><code>waitFor {} // use default configuration
+waitFor(10) {} // wait for up to 10 seconds, using the default retry interval
+waitFor(10, 0.5) {} // wait for up to 10 seconds, waiting half a second in between retries
+waitFor(&quot;quick&quot;) {} // use the preset “quick” as the wait settings
+</code></pre><p>See the section on <a href="configuration.html#waiting">wait configuration</a> for how to change the default values and define presets.</p>
+<blockquote><p>It is also possible to declare that content should be implicitly waited on, see <a href="pages.html#wait">the <code>wait</code> option for content definition</a>. </p>
+</blockquote><h3><span id='examples'>9.2.1</span> Examples</h3><p>Here is an example showing one way of using <code>waitFor()</code> to deal with the situation where clicking a button invokes an AJAX request that creates a new <code>div</code> on its completion.</p>
+<pre><code>import geb.*
+
+class DynamicPage extends Page {
+    static content = {
+        theButton { $(&quot;input&quot;, value: &quot;Make Request&quot;) }
+        theResultDiv(required: false) { $(&quot;div#result&quot;) }
+    }
+
+    def makeRequest() {
+        theButton.click()
+        waitFor { theResultDiv.present }
+    }
+}
+
+Browser.drive {
+    to DynamicPage
+    makeRequest()
+    assert theResultDiv.text() == &quot;The Result&quot;
+}
+</code></pre>
+<blockquote><p>Notice that the &lsquo;<code>theResultDiv</code>&rsquo; is declared <code>required: false</code>. This is almost always necessary when dealing with dynamic content as it&rsquo;s likely to not be present on the page when it is first accessed (see: <a href="pages.html#required">section on <code>required</code></a>)</p>
+</blockquote><p>Because the browser delegates method calls to the page object, the above could have been written as…</p>
+<pre><code>Browser.drive {
+    $(&quot;input&quot;, value: &quot;Make Request&quot;)
+    waitFor { $(&quot;div#result&quot;).present }
+    assert $(&quot;div#result&quot;).text() == &quot;The Result&quot;
+}
+</code></pre><p>Recall that the <code>return</code> keyword is optional in Groovy, so in the example above the <code>$(&quot;div#result&quot;).present</code> statement acts as the return value for the closure and is used as the basis on whether the closure <em>passed</em> or not. This means that you must ensure that the last statement inside the closure returns a value that is <code>true</code> according to the <a href="http://groovy.codehaus.org/Groovy+Truth">Groovy Truth</a> (if you&rsquo;re unfamiliar with the Groovy Truth <strong>do</strong> read that page).</p>
+<blockquote><p>Not using explicit <code>return</code> statements in closure expressions passed to <code>waitFor()</code> is actually preferred. See the section on <a href="implicit-assertions.html">implicit assertions</a> for more information.</p>
+</blockquote><p>The closures given to the <code>waitFor</code> method(s) do not need to be single statement.</p>
+<pre><code>waitFor {
+    def a = 1
+    def b = 2
+    a == b
+}
+</code></pre><p>That will work fine.</p><p>If you wish to <em>test</em> multiple conditions as separate statement inside a <code>waitFor</code> closure, you can just put them in separate lines.</p>
+<pre><code>waitFor {
+    1 == 1
+    2 == 2
+}
+</code></pre><h3><span id='custom_message'>9.2.2</span> Custom message</h3><p>If you wish to add a custom message to <code>WaitTimeoutException</code> that is being thrown when <code>waitFor</code> call times out you can do so by providing a message parameter to the <code>waitFor</code> call:</p>
+<pre><code>waitFor (message: &#39;My custom message&#39;) { $(&quot;div#result&quot;).present }
+</code></pre><h2><span id='alert_and_confirm_dialogs'>9.3</span> Alert and Confirm Dialogs</h2><p>WebDriver currently <a href="http://code.google.com/p/selenium/wiki/FrequentlyAskedQuestions#Q:_Does_support_Javascript_alerts_and_prompts?">does not handle</a> the <a href="http://www.w3schools.com/JS/js_popup.asp"><code>alert()</code> and <code>confirm()</code> dialog windows</a>. However, we can fake it through some Javascript magic as <a href="http://code.google.com/p/selenium/issues/detail?id=27#c17">discussed on the WebDriver issue for this</a>. Geb implements a workaround based on this solution for you. Note that this feature relies on making changes to the browser&rsquo;s <code>window</code> DOM object so may not work on all browsers on all platforms. At the time when WebDriver adds support for this functionality the underlying implementation of the following methods will change to use that which will presumably be more robust. Geb adds this functionality through the <a href="api/geb/js/AlertAndConfirmSupport.html"><code>AlertAndConfirmSupport</code></a> class that is mixed into<br/><a href="api/geb/Page.html"><code>Page</code></a> and<br/><a href="api/geb/Module.html"><code>Module</code></a>.</p><p>The Geb methods <strong>prevent</strong> the browser from actually displaying the dialog, which is a good thing. This prevents the browser blocking while the dialog is displayed and causing your test to hang indefinitely.</p>
+<blockquote><p>Unexpected <code>alert()</code> and <code>confirm()</code> calls can have strange results. This is due to the nature of how Geb handles this internally. If you are seeing strange results, you may want to run your tests/scripts against a real browser and watch what happens to make sure there aren&rsquo;t <code>alert()</code>s or <code>confirm()</code>s being called that you aren&rsquo;t expecting. To do this, you need to disable Geb&rsquo;s handling by changing your code to not use the methods below.</p>
+</blockquote><h3><span id='alert'>9.3.1</span> alert()</h3><p>There are two methods that deal with <code>alert()</code> dialogs:</p>
+<pre><code>String withAlert(Closure actions)
+void withNoAlert(Closure actions)
+</code></pre><p>The first method, <code>withAlert()</code>, is used to verify actions that will produce an <code>alert()</code> dialog. This method returns the alert message.</p><p>Given the following HTML…</p>
+<pre><code>&lt;input type=&quot;button&quot; name=&quot;showAlert&quot; onclick=&quot;alert(&#39;Bang!&#39;);&quot; /&gt;
+</code></pre><p>The <code>withAlert()</code> method is used like so…</p>
+<pre><code>assert withAlert { $(&quot;input&quot;, name: &quot;showAlert&quot;).click() } == &quot;Bang!&quot;
+</code></pre><p>If an alert dialog is not raised by the given “actions” closure, an <code>AssertionError</code> will be thrown.</p><p>The <code>withAlert()</code> method also accepts a wait option. It is useful if the code in your “actions” closure is raising a dialog in an asynchronous manner and can be used like that:</p>
+<pre><code>assert withAlert(wait: true) { $(&quot;input&quot;, name: &quot;showAlert&quot;).click() } == &quot;Bang!&quot;
+</code></pre><p>The value for the <code>wait</code> option can be one of the following:</p>
+<ul>
+  <li><strong><code>true</code></strong> - wait for the content using the <em>default wait</em> configuration</li>
+  <li><strong>a string</strong> - wait for the content using the <em>wait preset</em> with this name from the configuration</li>
+  <li><strong>a number</strong> - wait for the content for this many seconds, using the <em>default retry interval</em> from the configuration</li>
+  <li><strong>a 2 element list of numbers</strong> - wait for the content using element 0 as the timeout seconds value, and element 1 as the retry interval seconds value</li>
+</ul><p>Any other value will be interpreted as <code>false</code>.</p><p>The second method, <code>withNoAlert()</code>, is used to verify actions that will not produce an <code>alert()</code> dialog. If an alert dialog is raised by the given “actions” closure, an <code>AssertionError</code> will be thrown.</p><p>Given the following HTML…</p>
+<pre><code>&lt;input type=&quot;button&quot; name=&quot;dontShowAlert&quot; /&gt;
+</code></pre><p>The <code>withNoAlert()</code> method is used like so…</p>
+<pre><code>withNoAlert { $(&quot;input&quot;, name: &quot;dontShowAlert&quot;).click() }
+</code></pre>
+<blockquote><p>It&rsquo;s a good idea to use <code>withNoAlert()</code> when doing something that <em>might</em> raise an alert. If you don&rsquo;t, the browser is going to raise a real alert dialog and sit there waiting for someone to click it which means your test is going to hang. Using <code>withNoAlert()</code> prevents this.</p>
+</blockquote><p>A side effect of the way that this is implemented is that we aren&rsquo;t able to definitively handle actions that cause the browser&rsquo;s actual page to change (e.g. clicking a link in the closure given to <code>withAlert()</code>/<code>withNoAlert()</code>). We can detect that the browser page did change, but we can&rsquo;t know if <code>alert()</code> did or did not get called before the page change. If a page change was detected the <code>withAlert()</code> method will return a literal <code>true</code> (whereas it would normally return the alert message), while the <code>withNoAlert()</code> will succeed.</p><h3><span id='confirm'>9.3.2</span> confirm()</h3><p>There are three methods that deal with <code>confirm()</code> dialogs:</p>
+<pre><code>String withConfirm(boolean ok, Closure actions)
+String withConfirm(Closure actions) // defaults &#39;ok&#39; to true
+void withNoConfirm(Closure actions)
+</code></pre><p>The first method, <code>withConfirm()</code> (and its ‘<code>ok</code>’ defaulted relative), is used to verify actions that will produce an <code>confirm()</code> dialog. This method returns the confirmation message. The <code>ok</code> parameter controls whether the <code>confirm()</code> call should return <code>true</code> or <code>false</code> (i.e. the user has clicked the “OK” or “Cancel” buttons).</p><p>Given the following HTML…</p>
+<pre><code>&lt;input type=&quot;button&quot; name=&quot;showConfirm&quot; onclick=&quot;confirm(&#39;Do you like Geb?&#39;);&quot; /&gt;
+</code></pre><p>The <code>withConfirm()</code> method is used like so…</p>
+<pre><code>assert withConfirm(true) { $(&quot;input&quot;, name: &quot;showConfirm&quot;).click() } == &quot;Do you like Geb?&quot;
+</code></pre><p>If a confirmation dialog is not raised by the given “actions” closure, an <code>AssertionError</code> will be thrown.</p><p>The <code>withConfirm()</code> method also accepts a wait option just like the <code>withAlert()</code> method. See the <a href="javascript.html#alert">description of <code>withAlert()</code></a> to learn about the possible values and usage.</p><p>The second method, <code>withNoConfirm()</code>, is used to verify actions that will not produce an <code>confirm()</code> dialog. If a confirmation dialog is raised by the given “actions” closure, an <code>AssertionError</code> will be thrown.</p><p>Given the following HTML…</p>
+<pre><code>&lt;input type=&quot;button&quot; name=&quot;dontShowConfirm&quot; /&gt;
+</code></pre><p>The <code>withNoConfirm()</code> method is used like so…</p>
+<pre><code>withNoConfirm { $(&quot;input&quot;, name: &quot;dontShowConfirm&quot;).click() }
+</code></pre>
+<blockquote><p>It&rsquo;s a good idea to use <code>withNoConfirm()</code> when doing something that <em>might</em> raise a a confirmation. If you don&rsquo;t, the browser is going to raise a real confirmation dialog and sit there waiting for someone to click it which means your test is going to hang. Using <code>withNoConfirm()</code> prevents this.</p>
+</blockquote><p>A side effect of the way that this is implemented is that we aren&rsquo;t able to definitively handle actions that cause the browser&rsquo;s actual page to change (e.g. clicking a link in the closure given to <code>withConfirm()</code>/<code>withNoConfirm()</code>). We can detect that the browser page did change, but we can&rsquo;t know if <code>confirm()</code> did or did not get called before the page change. If a page change was detected the <code>withConfirm()</code> method will return a literal <code>true</code> (whereas it would normally return the alert message), while the <code>withNoConfirm()</code> will succeed.</p><h3><span id='about_prompt'>9.3.3</span> About prompt()</h3><p>Geb does not provide any support for prompt() due to it&rsquo;s infrequent and generally discouraged use.</p><h2><span id='jquery_integration'>9.4</span> jQuery Integration</h2><p>Geb has special support for the <a href="http://jquery.com/" title="jQuery: The Write Less, Do More, JavaScript Library">jQuery javascript library</a>. Navigator objects have a special adapter that makes calling jQuery methods against the underlying DOM elements simple. This is best explained by example.</p>
+<blockquote><p>The jQuery integration only works when the pages you are working with include jQuery, Geb does not install it in the page for you. The minimum supported version of jQuery is 1.4.</p>
+</blockquote><p>Consider the following page:</p>
+<pre><code>&lt;html&gt;
+&lt;head&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;/js/jquery-1.4.2.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;
+        $(function() {
+            $(&quot;#a&quot;).mouseover(function() {
+               $(&quot;b&quot;).show(); 
+            });
+        });
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;a&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;b&quot; style=&quot;display:none;&quot;&gt;&lt;a href=&quot;http://www.gebish.org&quot;&gt;Geb!&lt;/a&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>We want to click the Geb link, but can&rsquo;t because it&rsquo;s hidden (WebDriver does not let you interact with hidden elements). The div containing the link (div “a”) is only displayed when the mouse moves over div “a”.</p><p>The jQuery library provides convenient methods for triggering browser events. We can use this to simulate the mouse being moved over the div “a”.</p><p>In straight jQuery JavaScript we would do…</p>
+<pre><code>jQuery(&quot;div#a&quot;).mouseover()
+</code></pre><p>Which we could invoke via Geb easy enough…</p>
+<pre><code>js.exec &#39;jQuery(&quot;div#a&quot;).mouseover();&#39;
+</code></pre><p>That will work, but can be inconvenient as it duplicates content definitions in our Geb pages. Geb&rsquo;s jQuery integration allows you to use your defined content in Geb with jQuery. Here is how we could call the <code>mouseover</code> jQuery function on an element from Geb…</p>
+<pre><code>$(&quot;div#a&quot;).jquery.mouseover()
+</code></pre><p>To be clear, that is Groovy (not JavaScript code). It can be used with pages…</p>
+<pre><code>import geb.*
+
+class ExamplePage extends Page {
+    static content = {
+        divA { $(&quot;#a&quot;) }
+        divB { $(&quot;#b&quot;) }
+        gebLink { divB.find(&quot;a&quot;) }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    // div b is not showing
+    divA.jquery.mouseover()
+    // div b is showing now
+    gebLink.click()
+}
+</code></pre><p>The <code>jquery</code> property of a navigator is conceptually equivalent to a jQuery object for <em>all</em> of the navigator&rsquo;s matched page elements. </p><p>The methods can also take arguments…</p>
+<pre><code>$(&quot;#a&quot;).jquery.trigger(&#39;mouseover&#39;)
+</code></pre><p>The same set of restricted types as allowed by WebDriver&rsquo;s [<code>executeScript()</code>](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String</a>, java.lang.Object[])) method are permitted here.</p><p>The return value of methods called on the <code>jquery</code> property depends on what the corresponding jQuery method returns. A jQuery object will be converted to a Navigator representing the same set of elements, other values such as strings and numbers are returned as per WebDriver&rsquo;s [<code>executeScript()</code>](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/JavascriptExecutor.html#executeScript(java.lang.String</a>, java.lang.Object[])) method.</p><h3><span id='why'>9.4.1</span> Why?</h3><p>This functionality was developed to make triggering mouse related events easier. Some applications are very sensitive to mouse events and triggering these events in an automated environment is a challenge. jQuery provides a good API for faking these events which makes for a good solution.</p>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="implicit-assertions.html">Implicit Assertions</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="downloading.html">Direct Downloading</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

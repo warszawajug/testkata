@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Interacting with content - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="driver.html">The WebDriver Implementation</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="pages.html">Pages</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>4</span><a href='navigator.html#interacting_with_content'>Interacting with content</a><ul><li><span class='toc_number'>4.1</span><a href='navigator.html#the__function'>The $ Function</a><ul><li><span class='toc_number'>4.1.1</span><a href='navigator.html#css_selectors'>CSS Selectors</a></li><li><span class='toc_number'>4.1.2</span><a href='navigator.html#indexes_and_ranges'>Indexes and Ranges</a></li><li><span class='toc_number'>4.1.3</span><a href='navigator.html#attribute_and_text_matching'>Attribute and Text Matching</a><ul><li><span class='toc_number'>4.1.3.1</span><a href='navigator.html#using_patterns'>Using Patterns</a></li></ul><span class='toc_number'>4.1.4</span><a href='navigator.html#navigators_are_iterable'>Navigators are Iterable</a></li></ul><span class='toc_number'>4.2</span><a href='navigator.html#finding__filtering'>Finding & Filtering</a></li><li><span class='toc_number'>4.3</span><a href='navigator.html#traversing'>Traversing</a></li><li><span class='toc_number'>4.4</span><a href='navigator.html#composition'>Composition</a></li><li><span class='toc_number'>4.5</span><a href='navigator.html#clicking'>Clicking</a></li><li><span class='toc_number'>4.6</span><a href='navigator.html#determining_visibility'>Determining Visibility</a></li><li><span class='toc_number'>4.7</span><a href='navigator.html#size_and_location'>Size and Location</a></li><li><span class='toc_number'>4.8</span><a href='navigator.html#accessing_tag_name_attributes_text_and_classes'>Accessing tag name, attributes, text and classes</a></li><li><span class='toc_number'>4.9</span><a href='navigator.html#sending_keystrokes'>Sending keystrokes</a><ul><li><span class='toc_number'>4.9.1</span><a href='navigator.html#non_characters_eg_delete_key'>Non characters (e.g. delete key)</a></li></ul><span class='toc_number'>4.10</span><a href='navigator.html#accessing_input_values'>Accessing input values</a></li><li><span class='toc_number'>4.11</span><a href='navigator.html#form_control_shortcuts'>Form Control Shortcuts</a><ul><li><span class='toc_number'>4.11.1</span><a href='navigator.html#setting_values'>Setting Values</a><ul><li><span class='toc_number'>4.11.1.1</span><a href='navigator.html#select'>select</a></li><li><span class='toc_number'>4.11.1.2</span><a href='navigator.html#multiple_select'>multiple select</a></li><li><span class='toc_number'>4.11.1.3</span><a href='navigator.html#checkbox'>checkbox</a></li><li><span class='toc_number'>4.11.1.4</span><a href='navigator.html#radio'>radio</a></li><li><span class='toc_number'>4.11.1.5</span><a href='navigator.html#text_inputs_and_textareas'>text inputs and textareas</a></li><li><span class='toc_number'>4.11.1.6</span><a href='navigator.html#file_upload'>file upload</a></li></ul></li></ul><span class='toc_number'>4.12</span><a href='navigator.html#complex_interactions'>Complex Interactions</a><ul><li><span class='toc_number'>4.12.1</span><a href='navigator.html#using_the_webdriver_api_directly'>Using the WebDriver API directly</a></li><li><span class='toc_number'>4.12.2</span><a href='navigator.html#using_actions'>Using Actions</a></li><li><span class='toc_number'>4.12.3</span><a href='navigator.html#using_interact_closures'>Using Interact Closures</a></li><li><span class='toc_number'>4.12.4</span><a href='navigator.html#interact_examples'>Interact Examples</a><ul><li><span class='toc_number'>4.12.4.1</span><a href='navigator.html#drag_and_drop'>Drag and Drop</a></li><li><span class='toc_number'>4.12.4.2</span><a href='navigator.html#control_clicking'>Control-Clicking</a></li></ul></li></ul></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='interacting_with_content'>4</span> Interacting with content</h1><p>Geb provides a concise and Groovy interface to the content and controls in your browser. This is implemented through the <code>Navigator</code> API which is a jQuery inspired mechanism for finding, filtering and interacting with DOM elements.</p><h2><span id='the__function'>4.1</span> The $ Function</h2><p>The $ function is the access point to the browser&rsquo;s page content. This returns a <code>geb.navigator.Navigator</code> object that is roughly analogous to a jQuery object. It is analogous in that it represents one or more elements on the page and can be used to refine the matched content or query the matched content. When a $ function is called that does not match any content, an “empty” navigator object is returned that represents no content. Operations on “empty” navigators return <code>null</code> or another “empty” navigator or other values that make sense (e.g. the <code>size()</code> method returns <code>0</code>).</p><p>The signature of the $ function is as follows…</p>
+<pre><code>$(«css selector», «index or range», «attribute / text matchers»)
+</code></pre><p>The following is a concrete example…</p>
+<pre><code>$(&quot;h1&quot;, 2, class: &quot;heading&quot;)
+</code></pre><p>This would find the 3rd (elements are 0 indexed) <code>h1</code> element whose <code>class</code> <em>attribute</em> is exactly “<code>heading</code>”.</p><p>All arguments are optional, meaning the following calls are all valid:</p>
+<pre><code>$(&quot;div p&quot;, 0)
+$(&quot;div p&quot;, title: &quot;something&quot;)
+$(0)
+$(title: &quot;something&quot;)
+</code></pre>
+<blockquote><p>There is an alias for the dollar function named “find” if a method named “$” is not to your test (a current limitation of Groovy prevents us supporting a <code>find()</code> method like <code>$()</code> though, this will be fixed in later versions).</p>
+</blockquote><h3><span id='css_selectors'>4.1.1</span> CSS Selectors</h3><p>You can use any CSS selector that the underlying <code>WebDriver</code> supports…</p>
+<pre><code>$(&quot;div.some-class p:first[title=&#39;something&#39;]&quot;)
+</code></pre><p>In the case of the HTMLUnit driver, which does not support CSS selectors at all, only basic CSS 2 type selectors can be used. A future version of the HTMLUnit driver may gain better CSS selector support.</p><h3><span id='indexes_and_ranges'>4.1.2</span> Indexes and Ranges</h3><p>When matching, a single positive integer or integer range can be given to restrict by index.</p><p>Consider the following html…</p>
+<pre><code>&lt;p&gt;a&lt;/p&gt;
+&lt;p&gt;b&lt;/p&gt;
+&lt;p&gt;c&lt;/p&gt;
+</code></pre><p>We can use indexes to match content like so…</p>
+<pre><code>$(&quot;p&quot;, 0).text() == &quot;a&quot;
+$(&quot;p&quot;, 2).text() == &quot;c&quot;
+$(&quot;p&quot;, 0..1)*.text() = [&quot;a&quot;, &quot;b&quot;]
+$(&quot;p&quot;, 1..2)*.text() = [&quot;b&quot;, &quot;c&quot;]
+</code></pre><p>See below for an explanation of the <code>text()</code> method and the use of the spread operator.</p><h3><span id='attribute_and_text_matching'>4.1.3</span> Attribute and Text Matching</h3><p>Matches can be made on attributes and node text values via Groovy&rsquo;s named parameter syntax. The value <code>text</code> is treated specially as a match against the node&rsquo;s text. All other values are matched against their corresponding attribute values.</p><p>Consider the following html…</p>
+<pre><code>&lt;p attr1=&quot;a&quot; attr2=&quot;b&quot;&gt;p1&lt;/p&gt;
+&lt;p attr1=&quot;a&quot; attr2=&quot;c&quot;&gt;p2&lt;/p&gt;
+</code></pre><p>We can use attribute matchers like so…</p>
+<pre><code>$(&quot;p&quot;, attr1: &quot;a&quot;).size() == 2
+$(&quot;p&quot;, attr2: &quot;c&quot;).size() == 1
+</code></pre><p>Attribute values are <code>and</code>ed together…</p>
+<pre><code>$(&quot;p&quot;, attr1: &quot;a&quot;, attr2: &quot;b&quot;).size() == 1
+</code></pre><p>We can use text matchers like so…</p>
+<pre><code>$(&quot;p&quot;, text: &quot;p1&quot;).size() == 1
+</code></pre><p>You can mix attribute and text matchers…</p>
+<pre><code>$(&quot;p&quot;, text: &quot;p1&quot;, attr1: &quot;a&quot;).size() == 1
+</code></pre><h4><span id='using_patterns'>4.1.3.1</span> Using Patterns</h4><p>To match the entire value of an attribute or the text you use a <code>String</code> value. It is also possible to use a <code>Pattern</code> to do regexp matching…</p>
+<pre><code>$(&quot;p&quot;, text: ~/p./).size() == 2
+</code></pre><p>Geb also ships with a bunch of shortcut pattern methods…</p>
+<pre><code>$(&quot;p&quot;, text: startsWith(&quot;p&quot;)).size() == 2
+$(&quot;p&quot;, text: endsWith(&quot;2&quot;)).size() == 1
+</code></pre><p>The following is the complete listing:</p>
+<table class="graybox" border="0" cellspacing="0" cellpadding="5">
+    <tr><th>Case Sensitive</th><th>Case Insensitive</th><th>Description</th></tr>
+    <tr><td><code>startsWith</code></td><td><code>iStartsWith</code></td><td>Matches values that start with the given value</td>
+    <tr><td><code>contains</code></td><td><code>iContains</code></td><td>Matches values that contain the given value anywhere</td>
+    <tr><td><code>endsWith</code></td><td><code>iEndsWith</code></td><td>Matches values that end with the given value</td>
+    <tr><td><code>containsWord</code></td><td><code>iContainsWord</code></td><td>Matches values that contain the given value surrounded by either whitespace or the beginning or end of the value</td>
+    <tr><td><code>notStartsWith</code></td><td><code>iNotStartsWith</code></td><td>Matches values that DO NOT start with the given value</td>
+    <tr><td><code>notContains</code></td><td><code>iNotContains</code></td><td>Matches values that DO NOT contain the given value anywhere</td>
+    <tr><td><code>notEndsWith</code></td><td><code>iNotEndsWith</code></td><td>Matches values that DO NOT end with the given value</td>
+    <tr><td><code>notContainsWord</code></td><td><code>iNotContainsWord</code></td><td>Matches values that DO NOT contain the given value surrounded by either whitespace or the beginning or end of the value</td>
+        
+</table><p>All of these methods themselves can take a <code>String</code> or a <code>Pattern</code>…</p>
+<pre><code>$(&quot;p&quot;, text: contains(~/\d/)).size() == 2
+</code></pre>
+<blockquote><p>You might be wondering how this magic works, i.e. where these methods come from and where they can be used. They are methods that are available on <code>geb.Page</code> and other <em>places</em> where you can use the $ function. They simply just return patterns.</p>
+</blockquote><h3><span id='navigators_are_iterable'>4.1.4</span> Navigators are Iterable</h3><p>The navigator objects implement the Java <code>Iterable</code> interface, which allows you to do lots of Groovy stuff like use the <code>max()</code> function…</p>
+<pre><code>&lt;p&gt;1&lt;/p&gt;
+&lt;p&gt;2&lt;/p&gt;
+
+$(&quot;p&quot;).max { it.text() }.text() == &quot;2&quot;
+</code></pre><p>This also means that navigator objects work with the Groovy spread operator…</p>
+<pre><code>$(&quot;p&quot;)*.text().max() == &quot;2&quot;
+</code></pre><p>When treating a navigator as <code>Iterable</code>, the iterated over content is always the exact matched elements (as opposed to including children).</p><h2><span id='finding__filtering'>4.2</span> Finding &amp; Filtering</h2><p>Navigator objects have a <code>find</code> method for finding descendants, and <code>filter</code> and <code>not</code> methods for reducing the matched content.</p><p>Consider the following html…</p>
+<pre><code>&lt;div class=&quot;a&quot;&gt;
+    &lt;p class=&quot;b&quot;&gt;geb&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class=&quot;b&quot;&gt;goodness&lt;/div&gt;
+</code></pre><p>We can select <code>p.b</code> by…</p>
+<pre><code>$(&quot;div&quot;).find(&quot;.b&quot;)
+</code></pre><p>We can select <code>div.b</code> by…</p>
+<pre><code>$(&quot;div&quot;).filter(&quot;.b&quot;)
+</code></pre><p>or…</p>
+<pre><code>$(&quot;.b&quot;).not(&quot;p&quot;)
+</code></pre><p>We can select the <code>div</code> containing the <code>p</code> with…</p>
+<pre><code>$(&quot;div&quot;).has(&quot;p&quot;)
+</code></pre><p>The <code>find</code> and <code>filter</code> methods support the <strong>exact same options as the $ function</strong>.</p><p>These methods return a new navigator object that represents the new content.</p><h2><span id='traversing'>4.3</span> Traversing</h2><p>Navigators also have methods for selecting content <em>around</em> the matched content.</p><p>Consider the following html…</p>
+<pre><code>&lt;div class=&quot;a&quot;&gt;
+    &lt;div class=&quot;b&quot;&gt;
+        &lt;p class=&quot;c&quot;&gt;&lt;/p&gt;
+        &lt;p class=&quot;d&quot;&gt;&lt;/p&gt;
+        &lt;p class=&quot;e&quot;&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;f&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>You can select content <em>around</em> <code>p.d</code> by…</p>
+<pre><code>$(&quot;p.d&quot;).previous() // &#39;p.c&#39;
+$(&quot;p.e&quot;).prevAll() // &#39;p.c&#39; &amp; &#39;p.d&#39;
+$(&quot;p.d&quot;).next() // &#39;p.e&#39;
+$(&quot;p.c&quot;).nextAll() // &#39;p.d&#39; &amp; &#39;p.e&#39;
+$(&quot;p.d&quot;).parent() // &#39;div.b&#39;
+$(&quot;p.c&quot;).siblings() // &#39;p.d&#39; &amp; &#39;p.e&#39;
+$(&quot;div.a&quot;).children() // &#39;div.b&#39; &amp; &#39;div.f&#39;
+</code></pre><p>Consider the following html…</p>
+<pre><code>&lt;p class=&quot;a&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;b&quot;&gt;&lt;/p&gt;
+&lt;p class=&quot;c&quot;&gt;&lt;/p&gt;
+</code></pre><p>The following code will select <code>p.b</code> &amp; <code>p.c</code>…</p>
+<pre><code>$(&quot;p&quot;).next()
+</code></pre><p>The <code>previous</code>, <code>prevAll</code>, <code>next</code>, <code>nextAll</code>, <code>parent</code>, <code>parents</code>, <code>closest</code>, <code>siblings</code> and <code>children</code> methods can also take css selectors and attribute matchers.</p><p>Using the same html, the following code will select <code>p.c</code>…</p>
+<pre><code>$(&quot;p&quot;).next(&quot;.c&quot;)
+</code></pre><p>Likewise, consider the following html…</p>
+<pre><code>&lt;div class=&quot;a&quot;&gt;
+    &lt;div class=&quot;b&quot;&gt;
+        &lt;p&gt;&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre><p>The following code will select <code>div.b</code>…</p>
+<pre><code>$(&quot;p&quot;).parent(&quot;.b&quot;)
+</code></pre><p>The <code>closest</code> method is a special case in that it will select the first ancestors of the current elements that match a selector. There is no no-argument version of the <code>closest</code> method. For example, this will select <code>div.a</code>…</p>
+<pre><code>$(&quot;p&quot;).closest(&quot;.a&quot;)
+</code></pre><p>These methods do not take indexes as they automatically select the first matching content. To select multiple elements you can use <code>prevAll</code>, <code>nextAll</code> and <code>parents</code> all of which have no-argument versions and versions that filter by a selector.</p><p>The <code>nextUntil</code>, <code>prevUntil</code> and <code>parentsUntil</code> methods return all nodes along the relevant axis <em>until</em> the first one that matches a selector. Consider the following markup:</p>
+<pre><code>&lt;div class=&quot;a&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;b&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;c&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;d&quot;&gt;&lt;/div&gt;
+</code></pre><p>The following code will select <code>div.b</code> and <code>div.c</code>:</p>
+<pre><code>$(&quot;.a&quot;).nextUntil(&quot;.d&quot;)
+</code></pre><h2><span id='composition'>4.4</span> Composition</h2><p>It is also to compose navigator objects from other navigator objects, for situations where you can&rsquo;t express a content set in one query. To do this, simply call the $ function with the navigators to use…</p>
+<pre><code>$($(&quot;div.a&quot;), $(&quot;div.d&quot;))
+</code></pre><p>This will return a new navigator object that represents only the <code>a</code> and <code>d</code> divs.</p><p>You can compose navigator objects from content. So given a page content definition:</p>
+<pre><code>static content = {
+    divElement { divClass -&gt; $(&#39;p&#39;, &#39;class&#39;: divClass) }
+}
+</code></pre><p>And a call:</p>
+<pre><code>$(divElement(&#39;a&#39;), divElement(&#39;d&#39;))
+</code></pre><p>You will get a navigator that contains the same elements as the one above.</p><h2><span id='clicking'>4.5</span> Clicking</h2><p>Navigator objects implement the <code>click()</code> method, which will instruct the browser to click <strong>only the first item</strong> the navigator has matched.</p><p>There are also <code>click(Class)</code> and <code>click(List&lt;Class&gt;)</code> methods that are analogous to the browser object&rsquo;s <a href="browser.html#changing_the_page"><code>page(Class)</code> and <code>page(List&lt;Class&gt;)</code> methods respectively</a>. This allow page changes to be specified at the same time as click actions.</p><p>For example…</p>
+<pre><code>$(&quot;input.loginButton&quot;).click(LoginPage)
+</code></pre><p>Would click the “<code>input.loginButton</code>” element, then effectively call <code>browser.page(LoginPage)</code> and verify that the browser is at the expected page.</p><h2><span id='determining_visibility'>4.6</span> Determining Visibility</h2><p>Navigator objects have a <code>displayed</code> property that indicates whether the element is visible to the user or not. The <code>displayed</code> property of a navigator object that doesn&rsquo;t match anything is always <code>false</code></p><h2><span id='size_and_location'>4.7</span> Size and Location</h2><p>You can obtain the size and location of content on the page. All units are in pixels. The size is available via the <code>height</code> and <code>width</code> properties, while the location is available as the <code>x</code> and <code>y</code> properties which represent the distance from the top left of the page (or parent frame) to the top left point of the content.</p><p>All of these properties operate on the <strong>first</strong> matched element only.</p>
+<pre><code>$(&quot;div&quot;).height == 20
+$(&quot;div&quot;).width == 40
+$(&quot;div&quot;).x == 60
+$(&quot;div&quot;).y == 80
+</code></pre><p>To obtain any of the properties for all matched elements, you can use the Groovy spread operator.</p>
+<pre><code>$(&quot;div&quot;)*.height == [20, 30]
+$(&quot;div&quot;)*.width == [40, 50]
+$(&quot;div&quot;)*.x == [60, 70]
+$(&quot;div&quot;)*.y == [80, 90]
+</code></pre><h2><span id='accessing_tag_name_attributes_text_and_classes'>4.8</span> Accessing tag name, attributes, text and classes</h2><p>The <code>tag()</code>, <code>text()</code>, <code>@attribute</code> and <code>classes()</code> methods return the requested content on the <em>first</em> matched content. The <code>classes()</code> method returns a <code>java.util.List</code> of unique class names sorted alphabetically.</p><p>Consider the following HTML…</p>
+<pre><code>&lt;p title=&quot;a&quot; class=&quot;a para&quot;&gt;a&lt;/p&gt;
+&lt;p title=&quot;b&quot; class=&quot;b para&quot;&gt;b&lt;/p&gt;
+&lt;p title=&quot;c&quot; class=&quot;c para&quot;&gt;c&lt;/p&gt;
+</code></pre><p>The following assertions are valid…</p>
+<pre><code>$(&quot;p&quot;).text() == &quot;a&quot;
+$(&quot;p&quot;).tag() == &quot;p&quot;
+$(&quot;p&quot;).@title == &quot;a&quot;
+$(&quot;p&quot;).classes() == [&quot;a&quot;, &quot;para&quot;]
+</code></pre><p>To obtain information about all matched content, you use the Groovy <em>spread operator</em>…</p>
+<pre><code>$(&quot;p&quot;)*.text() == [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
+$(&quot;p&quot;)*.tag() == [&quot;p&quot;, &quot;p&quot;, &quot;p&quot;]
+$(&quot;p&quot;)*.@title == [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
+$(&quot;p&quot;)*.classes() == [[&quot;a&quot;, &quot;para&quot;], [&quot;b&quot;, &quot;para&quot;], [&quot;c&quot;, &quot;para&quot;]]
+</code></pre><h2><span id='sending_keystrokes'>4.9</span> Sending keystrokes</h2><p>Keystrokes can be sent to any content via the leftShift operator, which is a shortcut for the [<code>sendKeys()</code>](<a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebElement.html#sendKeys(java.lang.CharSequence...\)">http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebElement.html#sendKeys(java.lang.CharSequence...\)</a>) method of WebDriver.</p>
+<pre><code>$(&quot;div&quot;) &lt;&lt; &quot;abc&quot;
+</code></pre><p>How content responds to the keystrokes depends on what the content is.</p><h3><span id='non_characters_eg_delete_key'>4.9.1</span> Non characters (e.g. delete key)</h3><p>It is possible to send non textual characters to content by using the WebDriver <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/Keys.html" title="Keys">Keys</a> enumeration…</p>
+<pre><code>import org.openqa.selenium.Keys
+
+$(&quot;input&quot;, name: &quot;firstName&quot;) &lt;&lt; Keys.chord(Keys.CONTROL, &quot;c&quot;)
+</code></pre><p>Here we are sending a “control-c” to an input.</p><p>See the documentation for <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/Keys.html" title="Keys">Keys</a> for more information on the possible keys.</p><h2><span id='accessing_input_values'>4.10</span> Accessing input values</h2><p>The value of <code>input</code>, <code>select</code> and <code>textarea</code> elements can be retrieved and set with the <code>value</code> method. Calling <code>value()</code> with no arguments will return the String value of <em>the first</em> element in the Navigator. Calling <code>value(value)</code> will set the current value of <em>all</em> elements in the Navigator. The argument can be of any type and will be coerced to a <code>String</code> if necessary. The exceptions are that when setting a <code>checkbox</code> value the method expects a <code>boolean</code> (or, an existing checkbox value) and when setting a multiple <code>select</code> the method expects an array or Collection of values.</p><h2><span id='form_control_shortcuts'>4.11</span> Form Control Shortcuts</h2><p>Interacting with form controls (<code>input</code>, <code>select</code> etc.) is such a common task in web functional testing that Geb provides convenient shortcuts for common functions.</p><p>Geb supports the following shortcuts for dealing with form controls.</p><p>Consider the following HTML…</p>
+<pre><code>&lt;form&gt;
+    &lt;input type=&quot;text&quot; name=&quot;geb&quot; value=&quot;testing&quot; /&gt;
+&lt;/form&gt;
+</code></pre><p>The value can be read and written via property notation…</p>
+<pre><code>$(&quot;form&quot;).geb == &quot;testing&quot;
+$(&quot;form&quot;).geb = &quot;goodness&quot;
+$(&quot;form&quot;).geb == &quot;goodness&quot;
+</code></pre><p>These are literally shortcuts for…</p>
+<pre><code>$(&quot;form&quot;).find(&quot;input&quot;, name: &quot;geb&quot;).value() == &quot;testing&quot;
+$(&quot;form&quot;).find(&quot;input&quot;, name: &quot;geb&quot;).value(&quot;goodness&quot;)
+$(&quot;form&quot;).find(&quot;input&quot;, name: &quot;geb&quot;).value() == &quot;goodness&quot;
+</code></pre><p>There is also a shortcut for obtaining a navigator based on a control name</p>
+<pre><code>$(&quot;form&quot;).geb()
+</code></pre><p>Which is literally a shortcut for…</p>
+<pre><code>$(&quot;form&quot;).find(&quot;input&quot;, name: &quot;geb&quot;)
+</code></pre>
+<blockquote><p>In the above and below examples with form controls we are using code like <code>$(&quot;form&quot;).someInput</code> where we could be using just <code>someInput</code> as long as there is only one control with the <em>name</em> <code>someInput</code> on the page. In the examples we are using <code>$(&quot;form&quot;).someInput</code> to hopefully be clearer.</p>
+</blockquote><p>If your content definition (either a page or a module) describes content which is an <code>input</code>, <code>select</code> or <code>textarea</code> you can access and set its value the same way as described above for forms. Given a page and module definitions for the above mentioned html:</p>
+<pre><code>class ShortcutModule extends Module {
+    static content = {
+       geb { $(&#39;form&#39;).geb() }
+    }
+}
+
+static content = {
+    geb { $(&#39;form&#39;).geb() }
+    shortcutModule { module ShortcutModule }
+}
+</code></pre><p>The following will pass:</p>
+<pre><code>assert geb == &quot;testing&quot;
+geb = &quot;goodness&quot;
+assert geb == &quot;goodness&quot;
+</code></pre><p>As well as:</p>
+<pre><code>assert shortcutModule.geb == &quot;testing&quot;
+shortcutModule.geb = &quot;goodness&quot;
+assert shortcutModule.geb == &quot;goodness&quot;
+</code></pre>
+<blockquote><p>The following examples describe usage of form controls only using code like <code>$(&quot;form&quot;).someInput</code>. Given a content definition <code>myContent { $(&quot;form&quot;).someInput }</code> you can substitute <code>$(&quot;form&quot;).someInput</code> in the examples with <code>myContent</code>.</p>
+</blockquote><h3><span id='setting_values'>4.11.1</span> Setting Values</h3><h4><span id='select'>4.11.1.1</span> select</h4><p>Select values are set by assigning the value or text of the required option. Assigned values are automatically coerced to String. For example…</p>
+<pre><code>&lt;select name=&quot;artist&quot;&gt;
+    &lt;option value=&quot;1&quot;&gt;Ima Robot&lt;/option&gt;
+    &lt;option value=&quot;2&quot;&gt;Edward Sharpe and the Magnetic Zeros&lt;/option&gt;
+    &lt;option value=&quot;3&quot;&gt;Alexander&lt;/option&gt;
+&lt;/select&gt;
+</code></pre><p>We can select options with…</p>
+<pre><code>$(&quot;form&quot;).artist = &quot;1&quot;         // first option selected by its value attribute
+$(&quot;form&quot;).artist = 2           // second option selected by its value attribute
+$(&quot;form&quot;).artist = &quot;Ima Robot&quot; // first option selected by its text
+</code></pre><p>If you attempt to set a select to a value that does not match the value or text of any options, an <code>IllegalArgumentException</code> will be thrown.</p><h4><span id='multiple_select'>4.11.1.2</span> multiple select</h4><p>If the select has the <code>multiple</code> attribute it is set with a array or <code>Collection</code> of values. Any options not in the values are un-selected. For example…</p>
+<pre><code>&lt;select name=&quot;genres&quot; multiple&gt;
+    &lt;option value=&quot;1&quot;&gt;Alt folk&lt;/option&gt;
+    &lt;option value=&quot;2&quot;&gt;Chiptunes&lt;/option&gt;
+    &lt;option value=&quot;3&quot;&gt;Electroclash&lt;/option&gt;
+    &lt;option value=&quot;4&quot;&gt;G-Funk&lt;/option&gt;
+    &lt;option value=&quot;5&quot;&gt;Hair metal&lt;/option&gt;
+&lt;/select&gt;
+</code></pre><p>We can select options with…</p>
+<pre><code>$(&quot;form&quot;).genres = [&quot;2&quot;, &quot;3&quot;]                 // second and third options selected by their value attributes
+$(&quot;form&quot;).genres = [1, 4, 5]                  // first, fourth and fifth options selected by their value attributes
+$(&quot;form&quot;).genres = [&quot;Alt folk&quot;, &quot;Hair metal&quot;] // first and last options selected by their text
+$(&quot;form&quot;).genres = []                         // all options un-selected
+</code></pre><p>If the collection being assigned contains a value that does not match the value or text of any options, an <code>IllegalArgumentException</code> will be thrown.</p><h4><span id='checkbox'>4.11.1.3</span> checkbox</h4><p>Checkboxes are generally checked/unchecked by setting their value to <code>true</code> or <code>false</code>.</p><p>You can also select a checkbox by explicitly setting its <code>value</code>. This is useful when you have a number of checkboxes with the same name, i.e.</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; name=&quot;pet&quot; value=&quot;dogs&quot; /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;pet&quot; value=&quot;cats&quot; /&gt;
+</code></pre><p>You can select dogs as your pet type, as follows:</p>
+<pre><code>$(&quot;checkbox&quot;, name: &quot;pet&quot;).value(&quot;dogs&quot;)
+</code></pre><p>Calling <code>value()</code> on a checked checkbox will return the value of its <code>value</code> attribute, i.e:</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; name=&quot;pet&quot; value=&quot;dogs&quot; checked=&quot;checked&quot;/&gt;
+
+assert $(&quot;checkbox&quot;, name: &quot;pet&quot;).value() == &quot;dogs&quot;
+</code></pre><p>Calling <code>value()</code> on an unchecked checkbox will return <code>false</code>, i.e:</p>
+<pre><code>&lt;input type=&quot;checkbox&quot; name=&quot;pet&quot; value=&quot;dogs&quot;/&gt;
+
+assert $(&quot;checkbox&quot;, name: &quot;pet&quot;).value() == false
+</code></pre><p>In general you should use <a href="http://docs.codehaus.org/display/GROOVY/Groovy+Truth">Groovy Truth</a> when checking if a checkbox is checked:</p>
+<pre><code>if ($(&quot;checkbox&quot;, name: &quot;pet&quot;).value()) {
+    //evaluated only if &quot;pet&quot; checkbox is checked
+}
+</code></pre><h4><span id='radio'>4.11.1.4</span> radio</h4><p>Radio values are set by assigning the value of the radio button that is to be selected or the label text associated with a radio button.</p><p>For example, with the following radio buttons…</p>
+<pre><code>&lt;label for=&quot;site-current&quot;&gt;Search this site&lt;/label&gt;
+&lt;input type=&quot;radio&quot; id=&quot;site-current&quot; name=&quot;site&quot; value=&quot;current&quot;&gt;
+
+&lt;label&gt;Search Google
+    &lt;input type=&quot;radio&quot; name=&quot;site&quot; value=&quot;google&quot;&gt;
+&lt;/label&gt;
+</code></pre><p>We can select the radios with…</p>
+<pre><code>$(&quot;form&quot;).site = &quot;current&quot;          // selects the first radio by its value
+$(&quot;form&quot;).site = &quot;Search this site&quot; // selects the first radio by its label
+$(&quot;form&quot;).site = &quot;Search Google&quot;    // selects the second radio by its label
+</code></pre><h4><span id='text_inputs_and_textareas'>4.11.1.5</span> text inputs and textareas</h4><p>In the case of a text <code>input</code>, the assigned value becomes the input&rsquo;s <em>value</em> attribute and for a <code>textarea</code> effectively becomes the text.</p><p>It is also possible to append text by using the send keys shorthand…</p>
+<pre><code>&lt;input name=&quot;language&quot; value=&quot;gro&quot; /&gt;
+
+$(&quot;form&quot;).language() &lt;&lt; &quot;ovy&quot;
+assert $(&quot;form&quot;).language == &quot;groovy&quot;
+</code></pre><p>Which an also be used for non character keys…</p>
+<pre><code>&lt;input name=&quot;postcode&quot; /&gt;
+
+import org.openqa.selenium.Keys
+
+$(&quot;form&quot;).postcode = &quot;12345&quot;
+$(&quot;form&quot;).postcode() &lt;&lt; Keys.BACK_SPACE
+assert $(&quot;form&quot;).postcode == &quot;1234&quot;
+</code></pre>
+<blockquote><p>Note that WebDriver has some issues with textareas and surrounding whitespace. Namely, some drivers implicit trim whitespace from the beginning and end of the value. You can track this issue here: <a href="http://code.google.com/p/selenium/issues/detail?id=2131">http://code.google.com/p/selenium/issues/detail?id=2131</a></p>
+</blockquote><h4><span id='file_upload'>4.11.1.6</span> file upload</h4><p>It&rsquo;s currently not possible with WebDriver to simulate the process of a user clicking on a file upload control and choosing a file to upload via the normal file chooser. However, you can directly set the value of the upload control to the <em>absolute path</em> of a file on the system where the driver is running and on form submission that file will be uploaded.</p>
+<pre><code>&lt;input type=&quot;file&quot; name=&quot;csvFile&quot;&gt;
+
+$(&quot;form&quot;).csvFile = &quot;/path/to/my/file.csv&quot;
+</code></pre><h2><span id='complex_interactions'>4.12</span> Complex Interactions</h2><p>WebDriver supports interactions that are more complex than simply clicking or typing into items, such as dragging. You can use this API from Geb, or use the more Geb friendly <code>interact {}</code> DSL (explained below).</p><h3><span id='using_the_webdriver_api_directly'>4.12.1</span> Using the WebDriver API directly</h3><p>A Geb navigator object is built on top of a collection of WebDriver <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebElement.html">WebElement</a> objects. It is possible to access the contained <code>WebElement</code>s via the following methods on navigator objects:</p>
+<pre><code>WebElement firstElement()
+WebElement lastElement()
+Collection&lt;WebElement&gt; allElements()
+</code></pre><p>By using the methods of the WebDriver <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/interactions/Actions.html">Actions</a> class with WebElements, complex user gestures can be emulated.</p><h3><span id='using_actions'>4.12.2</span> Using Actions</h3><p>Create an Actions instance after obtaining the WebDriver driver:</p>
+<pre><code>def actions = new Actions(driver)
+</code></pre><p>Next, use methods of Actions to compose a series of UI actions, then call build() to create a concrete Action:</p>
+<pre><code>import org.openqa.selenium.Keys
+
+WebElement someItem = $(&#39;li.clicky&#39;).firstElement()
+def shiftDoubleClickAction = actions.keyDown(Keys.SHIFT).doubleClick(someItem).keyUp(Keys.SHIFT).build()
+</code></pre><p>Finally, call perform() to actually trigger the desired mouse or keyboard behavior:</p>
+<pre><code>shiftDoubleClickAction.perform()
+</code></pre><h3><span id='using_interact_closures'>4.12.3</span> Using Interact Closures</h3><p>To cut down on the amount of typing required, use an interact closure instead of using class <code>Actions</code> explicitly. When using an interact closure, an <code>Actions</code> instance is implicitly created, built into an Action, and performed. As an added bonus, Geb navigators can be passed directly to <code>Actions</code> methods within an interact closure.</p><p>This interact closure performs the same work as the calls in the &lsquo;Using Actions&rsquo; section:</p>
+<pre><code>import org.openqa.selenium.Keys
+
+interact {
+    keyDown(Keys.SHIFT)
+    doubleClick($(&#39;li.clicky&#39;))
+    keyUp(Keys.SHIFT)
+}
+</code></pre><p>This method creates code that is more readable than using <code>Actions</code> directly.</p><p>For the full list of available interactions, see the documentation for the WebDriver <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/interactions/Actions.html">Actions</a> class.</p><h3><span id='interact_examples'>4.12.4</span> Interact Examples</h3><p>Interact closures (or Actions) can be used to perform behaviors that are more complicated than clicking buttons and anchors or typing in input fields. Shift-double-clicking was demonstrated earlier.</p><h4><span id='drag_and_drop'>4.12.4.1</span> Drag and Drop</h4><p>clickAndHold, moveByOffset, and then release will drag and drop an element on the page.</p>
+<pre><code>interact {
+    clickAndHold($(&#39;#element&#39;))
+    moveByOffset(400, -150)
+    release()
+}
+</code></pre><p>Drag-and-dropping can also be accomplished using the <code>dragAndDropBy</code> convenience method from the Actions API:</p>
+<pre><code>interact {
+    dragAndDropBy($(&#39;#element&#39;), 400, -150)
+}
+</code></pre><p>In this particular example the element will be clicked then dragged 400 pixels to the right and 150 pixels upward before being released.</p>
+<blockquote><p>Note that moving to arbitrary locations with the mouse is currently not supported by the HTMLUnit driver, but moving directly to elements is.</p>
+</blockquote><h4><span id='control_clicking'>4.12.4.2</span> Control-Clicking</h4><p>Control-clicking several elements, such as items in a list, is performed the same way as shift-clicking.</p>
+<pre><code>import org.openqa.selenium.Keys
+
+interact {
+    keyDown(Keys.CONTROL)
+    click($(&#39;ul.multiselect li&#39;, text: &#39;Order 1&#39;))
+    click($(&#39;ul.multiselect li&#39;, text: &#39;Order 2&#39;))
+    click($(&#39;ul.multiselect li&#39;, text: &#39;Order 3&#39;))
+    keyUp(Keys.CONTROL)
+}
+</code></pre>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="driver.html">The WebDriver Implementation</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="pages.html">Pages</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>
