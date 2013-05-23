@@ -1,0 +1,6 @@
+.gradle
+.idea
+testkata.iml
+build
+*.ipr
+*.iws
