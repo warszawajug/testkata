@@ -43,7 +43,5 @@
 
     <!--<mongo:mapping-converter />-->
 
-    <bean id="externalBillerService" class="eu.solidcraft.testkata.infrastructure.ExternalBillerServiceMock"/>
-
 
 </beans>
