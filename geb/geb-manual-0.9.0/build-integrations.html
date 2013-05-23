@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Build System & Framework Integrations - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="testing.html">Testing</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="project.html">About the Project</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>14</span><a href='build-integrations.html#build_system__framework_integrations'>Build System & Framework Integrations</a><ul><li><span class='toc_number'>14.1</span><a href='build-integrations.html#grails'>Grails</a></li><li><span class='toc_number'>14.2</span><a href='build-integrations.html#gradle'>Gradle</a></li><li><span class='toc_number'>14.3</span><a href='build-integrations.html#maven'>Maven</a></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='build_system__framework_integrations'>14</span> Build System &amp; Framework Integrations</h1><p>This kind of integration for Geb is typically focussed on managing the base url and reports dir as build systems tend to be able to provide this configuration (via the <a href="configuration.html#build_adapter">build adapter</a> mechanism).</p><h2><span id='grails'>14.1</span> Grails</h2><p><a href="http://grails.org">Grails</a> is a popular web app framework. There is a <a href="http://grails.org/plugin/geb">grails-geb plugin</a> available that allows you to use Geb for your Grails functional tests. This plugin simply manages the <code>baseUrl</code> and <code>reportsDir</code> configuration items.</p><p>You still need to include the appropriate Geb module for testing (i.e. <code>geb-junit4</code>, <code>geb-spock</code> or <code>geb-easyb</code>) yourself. You may also need to depend on other plugins like the <a href="http://grails.org/plugin/spock"><code>grails-spock</code></a> plugin to enable those kinds of tests.</p><p>For example, if you plan to use Spock with Geb you would need to add the following to the <code>BuildConfig.groovy</code>…</p>
+<pre><code>dependencies {
+    test &quot;org.gebish:geb-spock:0.9.0&quot;
+}
+plugins {
+    test &quot;:spock:0.7&quot;
+    test &quot;:geb:0.9.0&quot;
+}
+</code></pre><p>Where <code>0.9.0</code> and <code>0.7</code> are the versions of Geb and Spock you wish to use.</p><p>As Grails provides JUnit support out of the box, you only need to pull in the <code>geb-junit4</code> jar to use Geb with JUnit.</p>
+<blockquote><p>Grails 1.3 and later use JUnit 4. Earlier versions of Grails than this use Groovy 1.6 which Geb no longer supports.</p>
+</blockquote>
+<pre><code>dependencies {
+    test &quot;org.gebish:geb-junit4:0.9.0&quot;
+}
+plugins {
+    test &quot;:geb:0.9.0&quot;
+}
+</code></pre><p>You only need the appropriate Geb test integration jar, as it will depend on <code>geb-core</code> and Grails&rsquo; dependency management will take care of getting that for you.</p><p>You will also of course need a driver and the <code>selenium-support</code> dependency, which you can also specify in <code>BuildConfig.groovy</code>.</p>
+<pre><code>dependencies {
+    test &quot;org.seleniumhq.selenium:selenium-support:«webdriver version»&quot;
+    test &quot;org.seleniumhq.selenium:selenium-firefox-driver:«webdriver version»&quot;
+}
+</code></pre><p>HTMLUnit depends on some XML processing libraries that cause issues with Grails. You can avoid this by excluding certain dependencies of the HTMLUnit driver…</p>
+<pre><code>test(&quot;org.seleniumhq.selenium:selenium-htmlunit-driver:«webdriver version»&quot;) {
+    exclude &#39;xml-apis&#39;
+}
+</code></pre><p>Recall that Geb looks for its configuration file as <code>GebConfig.groovy</code> on the classpath. A good location for this file is in a Grails project is the <code>test/functional</code> directory is on the classpath at test time. You <strong>do not</strong> need to set the <code>baseUrl</code> and <code>reportsDir</code> config entries in a Grails project as the plugin takes care of those for you. The <code>baseUrl</code> is set to the root of the Grails application, and the <code>reportsDir</code> is set to <code>geb</code> inside Grails&rsquo; test reports dir (which by default is <code>target/test-reports</code>).</p><p>There is nothing special about writing Geb tests with Grails. You subclass the same classes as usual (e.g. <code>geb.spock.GebReportingSpec</code> for Spock tests).</p><p>There is an example project available that uses <code>geb-junit4</code> and <code>geb-spock</code> to test some Grails scaffold pages.</p>
+<ul>
+  <li><a href="https://github.com/geb/geb-example-grails">http://github.com/geb/geb-example-grails</a></li>
+</ul><h2><span id='gradle'>14.2</span> Gradle</h2><p>Using Geb with Gradle simply involves pulling in the appropriate dependencies, and configuring the base URL and reports dir in the build script if they are necessary.</p><p>Below is a valid Gradle <code>build.gradle</code> file for working with Geb for testing.</p>
+<pre><code>apply plugin: &quot;groovy&quot;
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    testCompile.transitive = true
+}
+
+dependencies {
+    groovy &quot;org.codehaus.groovy:groovy-all:1.8.9&quot;
+
+    def gebVersion = &quot;0.9.0&quot;
+    def seleniumVersion = &quot;2.26.0&quot;
+
+    // If using Spock, need to depend on geb-spock
+    testCompile &quot;org.gebish:geb-spock:$gebVersion&quot;
+    testCompile &quot;org.spockframework:spock-core:0.7-groovy-1.8&quot;
+
+    // If using JUnit, need to depend on geb-junit (3 or 4)
+    testCompile &quot;org.gebish:geb-junit4:$gebVersion&quot;
+    testCompile &quot;junit:junit-dep:4.8.2&quot;
+
+    // Need a driver implementation
+    testCompile &quot;org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion&quot;
+    testRuntime &quot;org.seleniumhq.selenium:selenium-support:$seleniumVersion&quot;
+}
+
+test {
+    systemProperties &quot;geb.build.reportsDir&quot;: &quot;$reportsDir/geb&quot;
+}
+</code></pre><p>There is a Gradle example project available.</p>
+<ul>
+  <li><a href="https://github.com/geb/geb-example-gradle">http://github.com/geb/geb-example-gradle</a></li>
+</ul><h2><span id='maven'>14.3</span> Maven</h2><p>Using Geb with Maven simply involves pulling in the appropriate dependencies, and configuring the base URL and reports dir in the build script if they are necessary.</p><p>Below is a valid <code>pom.xml</code> file for working with Geb for testing (with Spock).</p>
+<pre><code>&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+        xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;org.gebish.example&lt;/groupId&gt;
+  &lt;artifactId&gt;geb-maven-example&lt;/artifactId&gt;
+  &lt;packaging&gt;jar&lt;/packaging&gt;
+  &lt;version&gt;1&lt;/version&gt;
+  &lt;name&gt;Geb Maven Example&lt;/name&gt;
+  &lt;url&gt;http://www.gebish.org&lt;/url&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.codehaus.groovy&lt;/groupId&gt;
+      &lt;artifactId&gt;groovy-all&lt;/artifactId&gt;
+      &lt;version&gt;1.7.10&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;4.8.1&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.spockframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spock-core&lt;/artifactId&gt;
+      &lt;version&gt;0.7-groovy-1.8&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.gebish&lt;/groupId&gt;
+      &lt;artifactId&gt;geb-spock&lt;/artifactId&gt;
+      &lt;version&gt;0.9.0&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+      &lt;artifactId&gt;selenium-firefox-driver&lt;/artifactId&gt;
+      &lt;version&gt;2.26.0&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+      &lt;artifactId&gt;selenium-support&lt;/artifactId&gt;
+      &lt;version&gt;2.26.0&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.9&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;includes&gt;
+            &lt;include&gt;*Spec.*&lt;/include&gt;
+          &lt;/includes&gt;
+          &lt;systemPropertyVariables&gt;
+            &lt;geb.build.baseUrl&gt;http://google.com/ncr&lt;/geb.build.baseUrl&gt;
+            &lt;geb.build.reportsDir&gt;target/test-reports/geb&lt;/geb.build.reportsDir&gt;
+          &lt;/systemPropertyVariables&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.codehaus.gmaven&lt;/groupId&gt;
+        &lt;artifactId&gt;gmaven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;1.3&lt;/version&gt;
+        &lt;configuration&gt;
+          &lt;providerSelection&gt;1.7&lt;/providerSelection&gt;
+        &lt;/configuration&gt;
+        &lt;executions&gt;
+          &lt;execution&gt;
+            &lt;goals&gt;
+              &lt;goal&gt;testCompile&lt;/goal&gt;
+            &lt;/goals&gt;
+          &lt;/execution&gt;
+        &lt;/executions&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p>There is a Maven example project available.</p>
+<ul>
+  <li><a href="https://github.com/geb/geb-example-maven">http://github.com/geb/geb-example-maven</a></li>
+</ul>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="testing.html">Testing</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="project.html">About the Project</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

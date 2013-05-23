@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Introduction - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="browser.html">The Browser</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>1</span><a href='intro.html#introduction'>Introduction</a><ul><li><span class='toc_number'>1.1</span><a href='intro.html#the_browser_automation_technology'>The Browser Automation Technology</a></li><li><span class='toc_number'>1.2</span><a href='intro.html#the_page_object_pattern'>The Page Object Pattern</a></li><li><span class='toc_number'>1.3</span><a href='intro.html#the_jquery_ish_navigator_api'>The jQuery-ish Navigator API</a></li><li><span class='toc_number'>1.4</span><a href='intro.html#full_examples'>Full Examples</a><ul><li><span class='toc_number'>1.4.1</span><a href='intro.html#inline_scripting'>Inline Scripting</a></li><li><span class='toc_number'>1.4.2</span><a href='intro.html#scripting_with_page_objects'>Scripting with Page Objects</a></li><li><span class='toc_number'>1.4.3</span><a href='intro.html#testing'>Testing</a></li></ul><span class='toc_number'>1.5</span><a href='intro.html#installation__usage'>Installation & Usage</a></li></ul></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='introduction'>1</span> Introduction</h1><p>Geb is a developer focused tool for automating the interaction between web browsers and web content. It uses the dynamic language features of <a href="http://groovy.codehaus.org/" title="Groovy - Home">Groovy</a> to provide a powerful content definition DSL (for modelling content for reuse) and key concepts from <a href="http://jquery.com/" title="jQuery: The Write Less, Do More, JavaScript Library">jQuery</a> to provide a powerful content inspection and traveral API (for finding and interacting with content).</p><p>Geb was born out of a desire to make browser automation (originally for web testing) easier and more productive. It aims to be a <strong>developer tool</strong> in that it allows and encourages the using of programming and language constructs instead of creating a restricted environment. It uses Groovy&rsquo;s dynamism to remove the noise and boiler plate code in order to focus on what&rsquo;s important — the content and interaction.</p><h2><span id='the_browser_automation_technology'>1.1</span> The Browser Automation Technology</h2><p>Geb builds on the <a href="http://code.google.com/p/selenium/">WebDriver</a> browser automation library, which means that Geb can work with <a href="http://code.google.com/p/selenium/wiki/FrequentlyAskedQuestions#Q:_Which_browsers_does_support?">any browser that WebDriver can</a>. While Geb provides an extra layer of convenience and productivity, it is always possible to “drop down” to the WebDriver level to do something directly should you need to.</p><p>For more information see the manual section on <a href="driver.html">using a driver implementation</a>.</p><h2><span id='the_page_object_pattern'>1.2</span> The Page Object Pattern</h2><p>The Page Object Pattern gives us a common sense way to model content in a reusable and maintainable way. From the <a href="http://code.google.com/p/selenium/wiki/PageObjects">WebDriver wiki page on the Page Object Pattern</a>:</p>
+<blockquote><p>Within your web app&rsquo;s UI there are areas that your tests interact with. A Page Object simply models these as objects within the test code. This reduces the amount of duplicated code and means that if the UI changes, the fix need only be applied in one place.</p>
+</blockquote><p>Furthermore (from the same document):</p>
+<blockquote><p>PageObjects can be thought of as facing in two directions simultaneously. Facing towards the developer of a test, they represent the services offered by a particular page. Facing away from the developer, they should be the only thing that has a deep knowledge of the structure of the HTML of a page (or part of a page) It&rsquo;s simplest to think of the methods on a Page Object as offering the &ldquo;services&rdquo; that a page offers rather than exposing the details and mechanics of the page. As an example, think of the inbox of any web-based email system. Amongst the services that it offers are typically the ability to compose a new email, to choose to read a single email, and to list the subject lines of the emails in the inbox. How these are implemented shouldn&rsquo;t matter to the test.</p>
+</blockquote><p>The Page Object Pattern is an important technique, and Geb provides first class support via its <a href="pages.html">page</a> and <a href="modules.html">module</a> constructs.</p><h2><span id='the_jquery_ish_navigator_api'>1.3</span> The jQuery-ish Navigator API</h2><p>The <a href="http://jquery.com/" title="jQuery: The Write Less, Do More, JavaScript Library">jQuery</a> JavaScript library provides an excellent API for (among other things) selecting or targeting content on a page and traversing through and around content. Geb takes a lot of inspiration from this. </p><p>In Geb, content is selected through the <code>$</code> function, which returns a <a href="api/geb/navigator/Navigator.html"><code>Navigator</code></a> object. A <a href="api/geb/navigator/Navigator.html"><code>Navigator</code></a> object is in someways analogous to the <code>jQuery</code> data type in jQuery in that it represents one or more targeted elements on the page.</p><p>Let&rsquo;s see some examples:</p>
+<pre><code>// match all &#39;div&#39; elements on the page
+$(&quot;div&quot;)
+
+// match the first &#39;div&#39; element on the page
+$(&quot;div&quot;, 0)
+
+// match all &#39;div&#39; elements with a title attribute value of &#39;section&#39;
+$(&quot;div&quot;, title: &quot;section&quot;)
+
+// match the first &#39;div&#39; element with a title attribute value of &#39;section&#39;
+$(&quot;div&quot;, 0, title: &quot;section&quot;)
+
+// match all &#39;div&#39; elements who have the class &#39;main&#39;
+$(&quot;div.main&quot;) 
+
+// match the first &#39;div&#39; element with the class &#39;main&#39;
+$(&quot;div.main&quot;, 0) 
+</code></pre><p>These methods return <code>Navigator</code> objects that can be used to further refine the content.</p>
+<pre><code>// The parent of the first paragraph
+$(&quot;p&quot;, 0).parent()
+
+// All tables with a cellspacing attribute value of 0 that are nested in a paragraph
+$(&quot;p&quot;).find(&quot;table&quot;, cellspacing: &#39;0&#39;)
+</code></pre><p>This is just the beginning of what is possible with the Navigator API. See the <a href="navigator.html">chapter on the navigator</a> for more details.</p><h2><span id='full_examples'>1.4</span> Full Examples</h2><p>Let&rsquo;s have a look at a simple case of wanting to search for “wikipedia” on Google and follow the first result returned.</p><h3><span id='inline_scripting'>1.4.1</span> Inline Scripting</h3><p>Here&rsquo;s an example of using Geb in an inline (i.e. no page objects or predefined content) scripting style…</p>
+<pre><code>import geb.Browser
+
+Browser.drive {
+    go &quot;http://google.com/ncr&quot;
+
+    // make sure we actually got to the page
+    assert title == &quot;Google&quot;
+
+    // enter wikipedia into the search field
+    $(&quot;input&quot;, name: &quot;q&quot;).value(&quot;wikipedia&quot;)
+
+    // wait for the change to results page to happen
+    // (google updates the page dynamically without a new request)
+    waitFor { title.endsWith(&quot;Google Search&quot;) }
+
+    // is the first link to wikipedia?
+    def firstLink = $(&quot;li.g&quot;, 0).find(&quot;a.l&quot;)
+    assert firstLink.text() == &quot;Wikipedia&quot;
+
+    // click the link 
+    firstLink.click()
+
+    // wait for Google&#39;s javascript to redirect to Wikipedia
+    waitFor { title == &quot;Wikipedia&quot; }
+}
+</code></pre><h3><span id='scripting_with_page_objects'>1.4.2</span> Scripting with Page Objects</h3><p>This time let us define our content up front using the Page Object pattern…</p>
+<pre><code>import geb.Browser
+import geb.Page
+import geb.Module
+
+// modules are reusable fragments that can be used across pages that can be paramaterised
+// here we are using a module to model the search function on the home and results pages
+class GoogleSearchModule extends Module {
+
+    // a paramaterised value set when the module is included
+    def buttonValue
+
+    // the content DSL
+    static content = {
+
+        // name the search input control “field”, defining it with the jQuery like navigator
+        field { $(&quot;input&quot;, name: &quot;q&quot;) }
+
+        // the search button declares that it takes us to the results page, and uses the 
+        // parameterised buttonValue to define itself
+        button(to: GoogleResultsPage) { 
+            $(&quot;input&quot;, value: buttonValue)
+        }
+    }
+}
+
+class GoogleHomePage extends Page {
+
+    // pages can define their location, either absolutely or relative to a base
+    static url = &quot;http://google.com/ncr&quot;
+
+    // “at checkers” allow verifying that the browser is at the expected page
+    static at = { title == &quot;Google&quot; }
+
+    static content = {
+        // include the previously defined module
+        search { module GoogleSearchModule, buttonValue: &quot;Google Search&quot; }
+    }
+}
+
+class GoogleResultsPage extends Page {
+    static at = { title.endsWith &quot;Google Search&quot; }
+    static content = {
+        // reuse our previously defined module
+        search { module GoogleSearchModule, buttonValue: &quot;Search&quot; }
+
+        // content definitions can compose and build from other definitions
+        results { $(&quot;li.g&quot;) }
+        result { i -&gt; results[i] }
+        resultLink { i -&gt; result(i).find(&quot;a.l&quot;) }
+        firstResultLink { resultLink(0) }
+    }
+}
+
+class WikipediaPage extends Page {
+    static at = { title == &quot;Wikipedia&quot; }
+}
+</code></pre><p>Now our script again, using the above defined content…</p>
+<pre><code>Browser.drive {
+    to GoogleHomePage
+    assert at(GoogleHomePage)
+    search.field.value(&quot;wikipedia&quot;)
+    waitFor { at GoogleResultsPage }
+    assert firstResultLink.text() == &quot;Wikipedia&quot;
+    firstResultLink.click()
+    waitFor { at WikipediaPage }
+}
+</code></pre><h3><span id='testing'>1.4.3</span> Testing</h3><p>Geb itself does not include any kind of testing or execution framework. Rather, it works with existing popular tools like <a href="http://spockframework.org/">Spock</a>, <a href="http://www.junit.org/">JUnit</a>, <a href="http://testng.org/">TestNG</a>, <a href="https://github.com/cucumber/cuke4duke/wiki">Cucumber</a> and <a href="http://www.easyb.org/">EasyB</a>. While Geb works well with all of these test tools, we encourage the use of <a href="http://spockframework.org/">Spock</a> as it&rsquo;s a great match for Geb with its focus and style.</p><p>Here is our Google case again, this time use Geb&rsquo;s <a href="http://spockframework.org/">Spock</a> integration…</p>
+<pre><code>import geb.spock.GebSpec
+
+class GoogleWikipediaSpec extends GebSpec {
+
+    def &quot;first result for wikipedia search should be wikipedia&quot;() {
+        given:
+        to GoogleHomePage
+
+        expect:
+        at GoogleHomePage
+
+        when:
+        search.field.value(&quot;wikipedia&quot;)
+
+        then:
+        waitFor { at GoogleResultsPage }
+
+        and:
+        firstResultLink.text() == &quot;Wikipedia&quot;
+
+        when:
+        firstResultLink.click()
+
+        then:
+        waitFor { at WikipediaPage }
+    }
+}
+</code></pre><p>For more information on using Geb for web and functional testing, see the <a href="testing.html">testing chapter</a>.</p><h2><span id='installation__usage'>1.5</span> Installation &amp; Usage</h2><p>Geb itself is a available as a single <a href="http://mvnrepository.com/artifact/org.gebish/geb-core"><code>geb-core</code> jar from the central Maven repository</a>. To get up and running you simply need this jar, a WebDriver driver implementation and the <code>selenium-support</code> jar.</p><p>Via <code>@Grab</code>…</p>
+<pre><code>@Grapes([
+    @Grab(&quot;org.gebish:geb-core:0.9.0&quot;),
+    @Grab(&quot;org.seleniumhq.selenium:selenium-firefox-driver:2.26.0&quot;),
+    @Grab(&quot;org.seleniumhq.selenium:selenium-support:2.26.0&quot;)
+])
+import geb.Browser
+</code></pre><p>Via Maven…</p>
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.gebish&lt;/groupId&gt;
+  &lt;artifactId&gt;geb-core&lt;/artifactId&gt;
+  &lt;version&gt;0.9.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+  &lt;artifactId&gt;selenium-firefox-driver&lt;/artifactId&gt;
+  &lt;version&gt;2.26.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+  &lt;artifactId&gt;selenium-support&lt;/artifactId&gt;
+  &lt;version&gt;2.26.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><p>Via Gradle…</p>
+<pre><code>compile &quot;org.gebish:geb-core:0.9.0&quot;, &quot;org.seleniumhq.selenium:selenium-firefox-driver:2.26.0&quot;, &quot;org.seleniumhq.selenium:selenium-support:2.26.0&quot;
+</code></pre><p>Alternatively, if using an integration such as <code>geb-spock</code> or <code>geb-junit</code> you can depend on that instead of <code>geb-core</code>.</p>
+<blockquote><p>Be sure to check the chapter on <a href="build-integrations.html">build integrations</a> for information on using Geb with particular environments<br/>, like <a href="http://grails.org">Grails</a>.</p>
+</blockquote>
+    <hr />
+    <div id="footer">
+      
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="browser.html">The Browser</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

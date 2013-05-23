@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - The Browser - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="intro.html">Introduction</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="driver.html">The WebDriver Implementation</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>2</span><a href='browser.html#the_browser'>The Browser</a><ul><li><span class='toc_number'>2.1</span><a href='browser.html#the_drive_method'>The drive() method</a></li><li><span class='toc_number'>2.2</span><a href='browser.html#making_requests'>Making requests</a><ul><li><span class='toc_number'>2.2.1</span><a href='browser.html#the_base_url'>The base URL</a></li><li><span class='toc_number'>2.2.2</span><a href='browser.html#using_pages'>Using pages</a></li><li><span class='toc_number'>2.2.3</span><a href='browser.html#direct'>Direct</a></li></ul><span class='toc_number'>2.3</span><a href='browser.html#the_page'>The Page</a><ul><li><span class='toc_number'>2.3.1</span><a href='browser.html#changing_the_page'>Changing the page</a></li></ul><span class='toc_number'>2.4</span><a href='browser.html#at_checking'>At checking</a></li><li><span class='toc_number'>2.5</span><a href='browser.html#page_change_listening'>Page change listening</a></li><li><span class='toc_number'>2.6</span><a href='browser.html#working_with_multiple_tabs_and_windows'>Working with multiple tabs and windows</a><ul><li><span class='toc_number'>2.6.1</span><a href='browser.html#switching_context_to_already_opened_windows'>Switching context to already opened windows</a></li><li><span class='toc_number'>2.6.2</span><a href='browser.html#switching_context_to_newly_opened_windows'>Switching context to newly opened windows</a><ul><li><span class='toc_number'>2.6.2.1</span><a href='browser.html#passing_options_when_working_with_newly_opened_windows'>Passing options when working with newly opened windows</a><ul><li><span class='toc_number'>2.6.2.1.1</span><a href='browser.html#close'>close</a></li><li><span class='toc_number'>2.6.2.1.2</span><a href='browser.html#page'>page</a></li><li><span class='toc_number'>2.6.2.1.3</span><a href='browser.html#wait'>wait</a></li></ul></li></ul></li></ul><span class='toc_number'>2.7</span><a href='browser.html#quitting_the_browser'>Quitting the browser</a></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='the_browser'>2</span> The Browser</h1><p>The entry point to Geb is the <a href="api/geb/Browser.html"><code>Browser</code></a> object.<br/>A browser object marries a <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/WebDriver.html"><code>WebDriver</code></a> instance (which drives the actual web browser being automated) with the concept of a “current page”.</p><p>Browser objects are created with a <a href="api/geb/Configuration.html">configuration</a> that specifies which driver implemenation to use, the base url to resolve relative links against and other bits of config. The configuration mechansism allows you to externalise how Geb should operate, which means you can use the same suite of Geb code or tests with different browsers or site instances. The <a href="configuration.html">chapter on configuration</a> contains more details on how to manage the configuration parameters and what they are.</p><p>The default constructor of <a href="api/geb/Browser.html"><code>Browser</code></a> simply loads its settings from the config mechanism.</p>
+<pre><code>import geb.Browser
+
+def browser = new Browser()
+</code></pre><p>However, if you prefer to specify the driver implementation (or any other settable property on the <a href="api/geb/Browser.html">browser</a>) you can by using Groovy&rsquo;s map constructor syntax.</p>
+<pre><code>import geb.Browser
+import org.openqa.selenium.firefox.FirefoxDriver
+
+def browser = new Browser(driver: new FirefoxDriver())
+</code></pre><p>Which is that same as…</p>
+<pre><code>def browser = new Browser()
+browser.driver = new FirefoxDriver()
+</code></pre><p>Any property set this way will <strong>override</strong> any settings coming from the config mechanism.</p>
+<blockquote><p>Note: The behaviour is undefined if a browser&rsquo;s driver is changed after its first use so you should avoid setting the driver this way and prefer the configuration mechanism.</p>
+</blockquote><p>For drastically custom configuration requirements, you can create your own <a href="api/geb/Configuration.html">configuration</a> object and construct the browser with it, likely using the <a href="api/geb/ConfigurationLoader.html">configuration loader</a>.</p>
+<pre><code>import geb.Browser
+import geb.Configuration
+import geb.ConfigurationLoader
+
+def loader = new ConfigurationLoader(&quot;a-custom-environment&quot;)
+def config = loader.conf
+def browser = new Browser(config)
+</code></pre><p>Wherever possible, you should strive to use the no-arg constructor and manage Geb through the inbuilt <a href="configuration.html">configuration mechanism</a> as it offers a great deal of flexibility and separates your configuration from your code.</p>
+<blockquote><p>Geb integrations typically remove the need to construct a browser object and do this for you, leaving you to just manage the configuration.</p>
+</blockquote><h2><span id='the_drive_method'>2.1</span> The drive() method</h2><p>The Browser class features a static method, <a href="api/geb/Browser.html#drive(groovy.lang.Closure)"><code>drive()</code></a>, that makes Geb scripting a little more convenient.</p>
+<pre><code>Browser.drive {
+    go &quot;signup&quot;
+    $(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+}
+</code></pre><p>Which is equivalent to:</p>
+<pre><code>def browser = new Browser()
+browser.go &quot;signup&quot;
+browser.$(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+</code></pre><p>The <code>drive()</code> method takes all of the arguments that the<br/><a href="api/geb/Browser.html"><code>Browser</code></a> constructor takes (i.e. none, a<br/><a href="api/geb/Configuration.html">configuration</a> and/or property overrides) or an existing browser instance, and a<br/>closure. The closure is evaluated against created browser instance (i.e. the browser is made the <em>delegate</em> of the closure). The net result is that all top level method calls and property accesses are implied to be against the browser.</p><p>The <code>drive()</code> method always returns the browser object that was used, so if you need to quit the browser after the drive session you can do something like…</p>
+<pre><code>Browser.drive(&quot;http://myapp.com&quot;) {
+    …
+}.quit()
+</code></pre>
+<blockquote><p>For more on when/why you need to manually quit the browser, see the section on the <a href="driver.html">driver</a></p>
+</blockquote><h2><span id='making_requests'>2.2</span> Making requests</h2><h3><span id='the_base_url'>2.2.1</span> The base URL</h3><p>Browser instances maintain a <a href="api/geb/Browser.html#getBaseUrl()"><code>baseUrl</code></a> property that is used to resolve all non absolute URLs.<br/>This value can come from <a href="configuration.html#base_url">configuration</a> or can be<br/><a href="api/geb/Browser.html#setBaseUrl(java.lang.String)">explicitly set</a> on the browser.</p><p>Care must be taken with slashes when specifying both the base URL and the relative URL as trailing and leading slashes have significant meaning. The following table illustrates the resolution of different types of URLs.</p>
+<table class="graybox" border="0" cellspacing="0" cellpadding="5">
+    <tr><th>Base</th><th>Navigating To</th><th>Result</th></tr>
+    <tr><td>http://myapp.com/</td><td>abc</td><td>http://myapp.com/abc</td></tr>
+    <tr><td>http://myapp.com</td><td>abc</td><td>http://myapp.comabc</td></tr>
+    <tr><td>http://myapp.com</td><td>/abc</td><td>http://myapp.com/abc</td></tr>
+    <tr><td>http://myapp.com/abc/</td><td>def</td><td>http://myapp.com/abc/def</td></tr>
+    <tr><td>http://myapp.com/abc</td><td>def</td><td>http://myapp.com/def</td></tr>
+    <tr><td>http://myapp.com/abc/</td><td>/def</td><td>http://myapp.com/def</td></tr>
+    <tr><td>http://myapp.com/abc/def/</td><td>jkl</td><td>http://myapp.com/abc/def/jkl</td></tr>
+    <tr><td>http://myapp.com/abc/def</td><td>jkl</td><td>http://myapp.com/abc/jkl</td></tr>
+    <tr><td>http://myapp.com/abc/def</td><td>/jkl</td><td>http://myapp.com/jkl</td></tr>
+</table><p>It is usually most desirable to define your base urls with trailing slashes and not to use leading slashes on relative URLs.</p><h3><span id='using_pages'>2.2.2</span> Using pages</h3><p>Page objects (discussed further shortly) can define a url that will be used when explicitly navigating to that page. This is done with the <a href="api/geb/Browser.html#to(java.lang.Class,%20Object[])"><code>to()</code></a> and <a href="api/geb/Browser.html#via(java.lang.Class,%20Object[])"><code>via()</code></a> methods.</p>
+<pre><code>class SignupPage extends Page {
+    static url = &quot;signup&quot;
+}
+
+Browser.drive {
+    to SignupPage
+    assert $(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+    assert page instanceof SignupPage
+}
+</code></pre><p>The <code>to()</code> and <code>via()</code> method makes a request to the resolved URL and sets the browser&rsquo;s page instance to an instance of the given class. Most Geb scripts and tests start with a <code>to()</code> or <code>via()</code> call.</p>
+<blockquote><p>See the section on <a href="page-navigation.html">Advanced Page Navigation</a> for more information on how to use more complicated URL resolution for pages.</p>
+</blockquote><h3><span id='direct'>2.2.3</span> Direct</h3><p>You can also make a new request to a URL without setting or changing the page using the <a href="api/geb/Browser.html#go()"><code>go()</code></a> methods. The following examples use a baseUrl of “<code>http://myapp.com/</code>”.</p>
+<pre><code>Browser.drive {
+    // Go to the Base URL
+    go()
+
+    // Go to a URL relative to Base URL
+    go &quot;signup&quot;
+
+    // Go to a URL with request params, i.e http://myapp.com/signup?param1=value1&amp;param2=value2
+    go &quot;signup&quot;, param1: &quot;value1&quot;, param2: &quot;value2&quot;
+}
+</code></pre><h2><span id='the_page'>2.3</span> The Page</h2><p>Browser instances hold a reference to a <em>page</em>. This page instance is retrievable via the <a href="api/geb/Browser.html#getPage()"><code>page</code></a> property. Initially, all browser instances have a page of type <a href="api/geb/Page.html"><code>Page</code></a> which provides the basic navigation functions and is the super class for all page objects.</p><p>However, the page property is rarely accessed directly. The browser object will <em>forward</em> any method calls or property read/writes that it can&rsquo;t handle to the current page instance. </p>
+<pre><code>Browser.drive {
+    go &quot;signup&quot;
+
+    // The following two lines are equivalent
+    assert $(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+    assert page.$(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+}
+</code></pre><p>The <em>page</em> is providing the $() function, not the browser. This forwarding facilitates very concise code, void of unnecessary noise.</p>
+<blockquote><p>for more information on the $() function which is used to interact with page content, see the section on the <a href="navigator.html">Navigator API</a>.</p>
+</blockquote><p>When using the Page Object pattern, you create subclasses of <a href="api/geb/Page.html"><code>Page</code></a> that define content via a powerful DSL that allows you to refer to content by meaningful names instead of tag names or CSS expressions.</p>
+<pre><code>class SignupPage extends Page {
+    static url = &quot;signup&quot;
+    static content = {
+        heading { $(&quot;h1&quot;).text() }
+    }
+}
+
+Browser.drive {
+    to SignupPage
+    assert heading == &quot;Signup Page&quot;
+}
+</code></pre><p>Page objects are discussed in depth in the <a href="pages.html">pages</a> chapter, which also explores the Content DSL.</p><h3><span id='changing_the_page'>2.3.1</span> Changing the page</h3><p>We have already seen that that <code>to()</code> methods change the browser&rsquo;s page instance. It is also possible to change the page instance without initiating a new request with the <code>page()</code> methods.</p><p>The <a href="api/geb/Browser.html#page(java.lang.Class)"><code>page(Class pageType)</code></a> method allows you to change the page to a new instance of the given class. The class must be <a href="api/geb/Page.html">Page</a> or a subclass thereof. This method <strong>does not</strong> verify that the given page actually matches the content (at checking is discussed shortly).</p><p>The <a href="api/geb/Browser.html#page(java.lang.Class[])"><code>page(Class[] potentialPageTypes)</code></a> method allows you to specify a number of <em>potential</em> page types. Each of the potential pages is instantiated and checked to see if it matches the content the browser is actually currently at by running each pages at checker.</p><p>These methods are not typically used explicitly but are used by the <code>to()</code> method and content definitions that specify the page that the content navigates to when clicked (see the section on the <a href="pages.html#to"><code>to</code> attribute of the Content DSL</a> for more information about this). However, should you need to manually change the page type they are there.</p><h2><span id='at_checking'>2.4</span> At checking</h2><p>Pages define an <a href="pages.html#at_verification">“at checker”</a> that the browser uses for checking if it is pointing at a given page.</p>
+<pre><code>class SignupPage extends Page {
+    static at = {
+        $(&quot;h1&quot;).text() == &quot;Signup Page&quot;
+    }
+}
+
+Browser.drive {
+    to SignupPage
+}
+</code></pre>
+<blockquote><p>Not using explicit <code>return</code> statements in “at” checkers is preffered. Geb transforms all “at” checkers so that each statement in them is asserted (just like for <code>then:</code> blocks in Spock specifications). Thanks to that you can immediately see evaluated values of your “at” checker if it fails. See the <a href="pages.html#at_verification">“at checker”</a> section for more details.</p>
+</blockquote><p>The <code>to()</code> method that takes a single page type <strong>verifies</strong> that the the browser ends up at the given type. If the request may initiate a redirect and take the browser to a different page you should use <code>via()</code> method:</p>
+<pre><code>Browser.drive {
+    via SecurePage
+    at AccessDeniedPage
+}
+</code></pre><p>Browser objects have an <a href="api/geb/Browser.html#at(java.lang.Class)"><code>at(Class pageType)</code></a> method that tests whether or not the browser is currently at the type of page modeled by the given page object type.</p><p>The <code>at AccessDeniedPage</code> method call will either return a page instance or throw an <code>AssertionError</code> even if there are no explicit assertions in the “at” checker if the checker doesn&rsquo;t pass.</p><p>It&rsquo;s a good idea to always use <code>to()</code> method or use <code>via()</code> together an <code>at()</code> check whenever the page changes in order to <em>fail fast</em>. Otherwise, subsequent steps may fail in harder to diagnose ways due to the content not matching what is expected and content lookups having strange results.</p><p>Pages can also define content that declares what the browser&rsquo;s page type should change to when that content is clicked. After clicking on such content page is automatically at verified (see the DSL reference for the <a href="pages.html#to"><code>to</code></a> parameter).</p>
+<pre><code>class LoginPage extends Page {
+    static content = {
+        loginButton(to: AdminPage) { $(&quot;input&quot;, type: &quot;submit&quot;, name: &quot;login&quot;) }
+    }
+}
+
+class AdminPage extends Page {
+    static at = {
+        assert $(&quot;h1&quot;).text() == &quot;Admin Page&quot;
+    }
+}
+
+Browser.drive {
+    to LoginPage
+    loginButton.click()
+    at AdminPage
+}
+</code></pre><p>The <code>at()</code> method will also update the browser&rsquo;s page instance to the given page type if its at checker is successful.</p><h2><span id='page_change_listening'>2.5</span> Page change listening</h2><p>It is possible to be notified when a browser&rsquo;s page <em>instance</em> changes (note that this is not necessarily when the browser makes a request to a new URL) using the <a href="api/geb/PageChangeListener.html"><code>PageChangeListener</code></a> interface.</p>
+<pre><code>import geb.PageChangeListener
+
+class EchoingPageChangeListener implements PageChangeListener {
+    void pageWillChange(Browser browser, Page oldPage, Page newPage) {
+        println &quot;browser &#39;$browser&#39; changing page from &#39;$oldPage&#39; to &#39;$newPage&#39;&quot;
+    }
+}
+
+def browser = new Browser()
+def listener = new EchoingPageChangeListener()
+
+browser.registerPageChangeListener(listener)
+</code></pre><p>As soon as a listener is registered, its <code>pageWillChange()</code> method will be called with <code>newPage</code> as the current page and <code>oldPage</code> as <code>null</code>. Subsequently, each time the page changes <code>oldPage</code> will be the page that the browser currently has, and <code>newPage</code> will be the page that will soon be the browser&rsquo;s page.</p><p>You can remove remove a listener at any time…</p>
+<pre><code>browser.removePageChangeListener(listener)
+</code></pre><p>The <a href="api/geb/Browser.html#removePageChangeListener(geb.PageChangeListener)"><code>removePageChangeListener(PageChangeListener listener)</code></a> returns <code>true</code> if <code>listener</code> was registered and has now been removed, otherwise it returns <code>false</code>.</p><p>Listeners cannot be registered twice. If an attempt is made to register a listener that is already registered (i.e. there is another listener that is <em>equal</em> to the listener trying to register, based on their <code>equals()</code> implementation) then a <a href="api/geb/error/PageChangeListenerAlreadyRegisteredException.html"><code>PageChangeListenerAlreadyRegisteredException</code></a> will be raised.</p><h2><span id='working_with_multiple_tabs_and_windows'>2.6</span> Working with multiple tabs and windows</h2><p>When you&rsquo;re working with an application that opens new windows or tabs, for example when clicking on a link with a target attribute set, you can use <code>withWindow()</code> and <code>withNewWindow()</code> methods to execute code in the context of other windows.</p><p>If you really need to know the name of the current window or all the names of open windows use <a href="api/geb/Browser.html#getCurrentWindow()"><code>getCurrentWindow()</code></a> and <a href="api/geb/Browser.html#getAvailableWindows()"><code>getAvailableWindows()</code></a> methods but <code>withWindow()</code> and <code>withNewWindow()</code> are the preferred methods when it comes to dealing with multiple windows.</p><h3><span id='switching_context_to_already_opened_windows'>2.6.1</span> Switching context to already opened windows</h3><p>If you know the name of the window in which context you want to execute the code you can use <a href="api/geb/Browser.html#withWindow(java.lang.String,%20groovy.lang.Closure)"><code>withWindow(String windowName, Closure block)</code></a>. Given this html:</p>
+<pre><code>&lt;a href=&quot;http://www.gebish.org&quot; target=&quot;myWindow&quot;&gt;Geb&lt;/a&gt;
+</code></pre><p>This code passes:</p>
+<pre><code>$(&#39;a&#39;).click()
+withWindow(&#39;myWindow&#39;) {
+    assert $(&#39;title&#39;).text() == &#39;Geb - Very Groovy Browser Automation&#39;
+}
+</code></pre><p>If you don&rsquo;t know the name of the window but you know something about the content of the window you can use the <a href="api/geb/Browser.html#withWindow(groovy.lang.Closure,%20groovy.lang.Closure)"><code>withWindow(Closure specification, Closure block)</code></a> method. The first closure passed should return true for the window, or windows, you want to use as context. Note that if there is no window for which the window specification closure returns true then <a href="http://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/NoSuchWindowException.html"><code>NoSuchWindowException</code></a> is thrown. So given:</p>
+<pre><code>&lt;a href=&quot;http://www.gebish.org&quot; target=&quot;_blank&quot;&gt;Geb&lt;/a&gt;
+</code></pre><p>This code passes:</p>
+<pre><code>$(&#39;a&#39;).click()
+withWindow({ $(&#39;title&#39;).text() == &#39;Geb - Very Groovy Browser Automation&#39; }) {
+    assert $(&#39;#slogan&#39;).text() == &#39;very groovy browser automation… web testing, screen scraping and more&#39;
+}
+</code></pre><h3><span id='switching_context_to_newly_opened_windows'>2.6.2</span> Switching context to newly opened windows</h3><p>If you wish to execute code in a window that is newly opened by some of your actions use the <a href="api/geb/Browser.html#withNewWindow(groovy.lang.Closure,%20groovy.lang.Closure)"><code>withNewWindow(Closure windowOpeningBlock, Closure block)</code></a> method. Given html as above the following will pass:</p>
+<pre><code>withNewWindow({ $(&#39;a&#39;).click() }) {
+    assert $(&#39;title&#39;).text() == &#39;Geb - Very Groovy Browser Automation&#39;
+}
+</code></pre><p>Note that if the first parameter opens none or more than one window then <a href="api/geb/error/NoNewWindowException.html"><code>NoNewWindowException</code></a> is thrown.</p><h4><span id='passing_options_when_working_with_newly_opened_windows'>2.6.2.1</span> Passing options when working with newly opened windows</h4><p>There are several options that can be passed to a <a href="api/geb/Browser.html#withNewWindow(java.util.Map,%20groovy.lang.Closure,%20groovy.lang.Closure)"><code>withNewWindow()</code></a> call which make working with newly opened windows even simpler. The general syntax is:</p>
+<pre><code>withNewWindow({ «window opening action» }, «option name»: «option value», ...) { «action executed within the context of the window» }
+</code></pre><h5><span id='close'>2.6.2.1.1</span> close</h5><p>Default value: <code>true</code></p><p>If you pass any truly value as <code>close</code> option then the newly opened window will be closed after the execution of the closure passed as the last argument to the <code>withNewWindow()</code> call.</p><h5><span id='page'>2.6.2.1.2</span> page</h5><p>Default value: <code>null</code></p><p>If you pass a class that extends <code>Page</code> as <code>page</code> option then browser&rsquo;s page will be set to that value before executing the closure passed as the last argument and will be reverted to it&rsquo;s original value afterwards.</p><h5><span id='wait'>2.6.2.1.3</span> wait</h5><p>Default value: <code>null</code></p><p>You can specify <code>wait</code> option if the action defined in the window opening closure passed as the first argument is asynchronous and you need to wait for the new window to be opened. The possible values for the <code>wait</code> option are consistent with the ones for content definition and can be one of the following:</p>
+<ul>
+  <li><strong><code>true</code></strong> - wait for the content using the <em>default wait</em> configuration</li>
+  <li><strong>a string</strong> - wait for the content using the <em>wait preset</em> with this name from the configuration</li>
+  <li><strong>a number</strong> - wait for the content for this many seconds, using the <em>default retry interval</em> from the configuration</li>
+  <li><strong>a 2 element list of numbers</strong> - wait for the content using element 0 as the timeout seconds value, and element 1 as the retry interval seconds value</li>
+</ul><p>Given the following html:</p>
+<pre><code>&lt;a href=&quot;http://www.gebish.org&quot; target=&quot;_blank&quot; id=&quot;new-window-link&quot;&gt;Geb&lt;/a&gt;
+</code></pre><p>the following will pass:</p>
+<pre><code>withNewWindow({
+    js.exec &quot;&quot;&quot;
+         setTimeout(function() {
+          document.getElementById(&#39;new-window-link&#39;).click();
+         }, 200);
+       &quot;&quot;&quot;
+}, wait: true) {
+    assert $(&#39;title&#39;).text() == &#39;Geb - Very Groovy Browser Automation&#39;
+}
+</code></pre><h2><span id='quitting_the_browser'>2.7</span> Quitting the browser</h2><p>The browser object has <a href="api/geb/Browser.html#quit()"><code>quit()</code></a><br/>and <a href="api/geb/Browser.html#close()"><code>close()</code></a> methods (that simply delegate to the underlying driver). See the section on <a href="driver.html">driver management</a> for more information on when and why you need to quit the browser.</p>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="intro.html">Introduction</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="driver.html">The WebDriver Implementation</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>

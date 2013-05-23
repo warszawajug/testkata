@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href="css/stylesheet.css" rel="stylesheet" type="text/css">
+  <title>The Book Of Geb - Modules - version 0.9.0</title>
+
+  <link type="text/css" rel="stylesheet" href="css/shCore.css"></link>
+  <link type="text/css" rel="stylesheet" href="css/shThemeEclipse.css"></link>
+  <script language="javascript" src="js/shCore.js"></script>
+  <script language="javascript" src="js/shBrushGroovy.js"></script>
+  <script type="text/javascript" src="js/jquery-1.6.1.min.js"></script>
+  <script type="text/javascript" src="js/syntaxhighlight.js"></script>
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15031038-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+      <span class="left">&#x25C0; <a href="pages.html">Pages</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="configuration.html">Configuration</a> &#x25B6;</span>
+    </div>
+    <hr />
+    <div class="page_toc">
+      <h3>Chapter Contents</h3>
+      <ul><li><span class='toc_number'>6</span><a href='modules.html#modules'>Modules</a><ul><li><span class='toc_number'>6.1</span><a href='modules.html#base_and_context'>Base And Context</a></li><li><span class='toc_number'>6.2</span><a href='modules.html#reusing_modules_across_pages'>Reusing modules across pages</a></li><li><span class='toc_number'>6.3</span><a href='modules.html#using_modules_for_repeating_content_on_a_page'>Using modules for repeating content on a page</a></li><li><span class='toc_number'>6.4</span><a href='modules.html#the_content_dsl'>The Content DSL</a></li><li><span class='toc_number'>6.5</span><a href='modules.html#inheritance'>Inheritance</a></li><li><span class='toc_number'>6.6</span><a href='modules.html#size_and_location'>Size and Location</a></li></ul></li></ul></li></ul>
+    </div>
+    <hr />
+    <h1><span id='modules'>6</span> Modules</h1><p>Modules are re-usable definitions of content that can be used across multiple pages. They are useful for modelling things like UI widgets that are used across multiple pages, or even for defining more complex UI elements in the one page.</p><p>They are defined in a manner similar to pages, but extend <a href="api/geb/Module.html"><code>Module</code></a>…</p>
+<pre><code>class ExampleModule extends Module {
+    static content = {
+        button { $(&quot;input&quot;, type: &quot;submit&quot;) }
+    }
+}
+</code></pre><p>Pages can “include” modules using the following syntax…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theModule { module ExampleModule }
+    }
+}
+</code></pre><p>The <code>module</code> method is a special method only available in content template definitions. It sets the content to an instance of the module…</p>
+<pre><code>Browser.drive {
+    to ExamplePage
+    theModule.button.click()
+}
+</code></pre><p>Modules can also be parameterised…</p>
+<pre><code>class ExampleModule extends Module {
+    def buttonName
+    static content = {
+        button { $(&quot;input&quot;, type: &quot;submit&quot;, name: buttonName) }
+    }
+}
+</code></pre><p>Where the parameters are set using the <code>module</code> method…</p>
+<pre><code>class ExamplePage extends Page {
+    static content = {
+        theModule { name -&gt; module ExampleModule, buttonName: name }
+    }
+}
+
+Browser.drive {
+    to ExamplePage
+    theModule(&quot;something&quot;).button.click()
+}
+</code></pre><p>Modules can also include other modules…</p>
+<pre><code>class ExampleModule extends Module {
+    static content = {
+        innerModule { module InnerModule }
+    }
+}
+
+class InnerModule extends Module {
+    static content = {
+        button { $(&quot;input&quot;, type: &quot;submit&quot;) }
+    }
+}
+
+class ExamplePage extends Page {
+    static content = {
+        theModule { module ExampleModule }
+    }
+}
+
+Browser.drive {
+    theModule.innerModule.button.click()
+}
+</code></pre><h2><span id='base_and_context'>6.1</span> Base And Context</h2><p>Modules can be localised to a specific section of the page that they are used in, or they can specify an absolute context as part of their definition. There are two ways that a modules base/context can be defined.</p><p>It can be defined at inclusion time…</p>
+<pre><code>static content = {
+    form { module FormModule, $(&quot;form&quot;) }
+}
+</code></pre><p>We can define a <code>Navigator</code> context when including the module using the above syntax. This now means that <em>all</em> <code>$()</code> function calls that occur within the module are against the given context (in this case, the <code>form</code> element).</p><p>However, module classes can also define their own base…</p>
+<pre><code>import geb.Module
+
+class FormModule extends Module {
+    static base = { $(&quot;form&quot;) }
+}
+</code></pre><p>This has the same effect as the code above.</p><p>They can also be combined. Consider the following HTML…</p>
+<pre><code>&lt;div class=&quot;a&quot;&gt;
+    &lt;form&gt;
+        &lt;input name=&quot;thing&quot; value=&quot;a&quot;/&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+&lt;div class=&quot;b&quot;&gt;
+    &lt;form&gt;
+        &lt;input name=&quot;thing&quot; value=&quot;b&quot;/&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+</code></pre><p>And the following content definitions…</p>
+<pre><code>import geb.*
+
+class ExamplePage extends Page {
+    static content = {
+        formA { module FormModule, $(&quot;div.a&quot;) }
+        formB { module FormModule, $(&quot;div.b&quot;) }
+    }
+}
+
+class FormModule extends Module {
+    static base = { $(&quot;form&quot;) }
+    static content = {
+        thingValue { thing().value() }
+    }
+}
+</code></pre><p>When working with a browser at a <code>ExamplePage</code> page…</p>
+<pre><code>assert formA.thingValue == &quot;a&quot;
+assert formB.thingValue == &quot;b&quot;
+</code></pre><p>If the module declares a base, it is always calculated <em>relative</em> to the base given by the including statement. If the including statement does not specify a base, the module&rsquo;s base is calculated relative to the including page&rsquo;s base.</p><h2><span id='reusing_modules_across_pages'>6.2</span> Reusing modules across pages</h2><p>As previously stated, modules can be used to model page fragments that are reused across multiple pages. For example, many different types of pages in your application may show information about the user&rsquo;s shopping cart. You could handle this with modules…</p>
+<pre><code>class CartInfoModule extends Module {
+    static content = {
+        section { $(&quot;div.cart-info&quot;) }
+        itemCount { section.find(&quot;span.item-count&quot;).toInteger() }
+        totalCost { section.find(&quot;span.total-cost&quot;).toDouble() }
+    }
+}
+
+class HomePage extends Page {
+    static content = {
+        cartInfo { module CartInfoModule }
+    }
+}
+
+class OtherPage extends Page {
+    static content = {
+        cartInfo { module CartInfoModule }
+    }
+}
+</code></pre><p>Modules work well for this.</p><h2><span id='using_modules_for_repeating_content_on_a_page'>6.3</span> Using modules for repeating content on a page</h2><p>Other than content that is repeated on different pages (like the shopping cart mentioned above), pages also have content that is repeated on the page itself. On a checkout page, the contents of the shopping cart could be summarized with the product name, the quantity and price for each product contained. For this kind of page, a list of modules can be collected using the moduleList function.</p><p>Consider the following HTML for our cart contents:</p>
+<pre><code>&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Product&lt;/th&gt;&lt;th&gt;Quantity&lt;/th&gt;&lt;th&gt;Price&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;The Book Of Geb&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;5.99&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Geb Single-User License&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;99.99&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Geb Multi-User License&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;199.99&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+</code></pre><p>We can model one line of the table like this:</p>
+<pre><code>class CartRow extends Module {
+    static content = {
+        cell { $(&quot;td&quot;, it) }
+        productName { cell(0).text() }
+        quantity { cell(1).text().toInteger() }
+        price { cell(2).text().toDouble() }
+    }
+}
+</code></pre><p>And define a list of CartRows in our Page:</p>
+<pre><code>class CheckoutPage extends Page {
+    static content = {
+        cartItems { moduleList CartRow, $(&quot;table tr&quot;).tail() } // tailing to skip the header row
+    }
+}
+</code></pre><p>Because the return value of cartItems is a list of CartRow instances, we can use any of the usual collection methods:</p>
+<pre><code>assert cartItems.every { it.price &gt; 0.0 }
+</code></pre><p>We can also access the cart items like this:</p>
+<pre><code>assert cartItems[0].productName == &quot;The Book Of Geb&quot;
+</code></pre><p>Unfortunatelly this has a perfromance penalty of creating all modules in the list. You can get around it and add support for ranges by changing your content definition to:</p>
+<pre><code>class CheckoutPage extends Page {
+    static content = {
+       cartItems { index -&gt; moduleList CartRow, $(&quot;table tr&quot;).tail(), index }
+    }
+}
+</code></pre><p>Now the all of the following will pass and is more efficient:</p>
+<pre><code>assert cartItems.every { it.price &gt; 0.0 }
+assert cartItems(0).productName == &quot;The Book Of Geb&quot;
+assert cartItems(1..2)*.productName == [&quot;Geb Single-User License&quot;, &quot;Geb Multi-User License&quot;]
+</code></pre><p>Keep in mind that you can also pass module parameters the same way as you would with the <code>module()</code> method:</p>
+<pre><code>static content = {
+    myContent { index -&gt; moduleList MyModule, $(&quot;.myModuleClass&quot;), index, myParam: &#39;param value&#39; }
+}
+</code></pre><h2><span id='the_content_dsl'>6.4</span> The Content DSL</h2><p>The Content DSL used for modules is <em>exactly</em> the same as the <a href="pages.html#the_content_dsl">one used for pages</a>, so all of the same options and techniques can be used.</p><h2><span id='inheritance'>6.5</span> Inheritance</h2><p>Modules can use inheritance in the same way that pages can. That is, their content definitions are merged with any content redefined in the subclass taking precedence of the superclass.</p><h2><span id='size_and_location'>6.6</span> Size and Location</h2><p>You can obtain the size and location of the module. All units are in pixels. The size is available via the <code>height</code> and <code>width</code> properties, while the location is available as the <code>x</code> and <code>y</code> properties which represent the distance from the top left of the page (or parent frame) to the top left point of the base of the module.</p>
+<pre><code>$(&quot;div&quot;).height == 20
+$(&quot;div&quot;).width == 40
+$(&quot;div&quot;).x == 60
+$(&quot;div&quot;).y == 80
+</code></pre>
+    <hr />
+    <div id="footer">
+      <span class="left">&#x25C0; <a href="pages.html">Pages</a></span>
+      <span class="center"><a href="index.html">Table of Contents</a></span>
+      <span class="right"><a href="configuration.html">Configuration</a> &#x25B6;</span>
+    </div>
+  </div>
+  <p style="text-align: center">
+    The Book of <a href="http://www.gebish.org">Geb</a> - 0.9.0 - April, 2013<br />
+    Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+  </p>
+</body>
+</html>
