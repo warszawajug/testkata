@@ -15,6 +15,7 @@
   
   <modules>
     <module>caliper</module>
+    <module>FestHamcrestKata</module>
   </modules>
 
 </project>
