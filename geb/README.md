@@ -33,10 +33,8 @@ However, a copy of this repository is attatched to this project for offline acce
 
 Geb application is originally based on Luke Daley's example application: [https://github.com/geb/geb-example-gradle](https://github.com/geb/geb-example-gradle).
 If you want to start from scratch look up in forks for versions updated to latest dependencies.
-hub.com/SpringSource/spring-webflow-samples)
 
 Credits and kudos
 -----------------
 
 This kata is prepared by [Tomasz Kalkosiński](https://github.com/SpOOnman). Geb's and Spring's repositories are included here only for offline excersise purposes.
-
