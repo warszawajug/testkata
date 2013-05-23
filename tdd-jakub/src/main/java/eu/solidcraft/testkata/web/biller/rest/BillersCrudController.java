@@ -1,8 +1,8 @@
 package eu.solidcraft.testkata.web.biller.rest;
 
-import eu.solidcraft.testkata.domain.Biller;
-import eu.solidcraft.testkata.domain.BillerRepository;
-import eu.solidcraft.testkata.domain.Product;
+import eu.solidcraft.testkata.domain.biller.Biller;
+import eu.solidcraft.testkata.domain.biller.BillerRepository;
+import eu.solidcraft.testkata.domain.biller.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

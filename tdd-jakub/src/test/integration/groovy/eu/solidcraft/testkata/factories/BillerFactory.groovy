@@ -1,7 +1,7 @@
 package eu.solidcraft.testkata.factories
-import eu.solidcraft.testkata.domain.Biller
-import eu.solidcraft.testkata.domain.BillerRepository
-import eu.solidcraft.testkata.domain.Product
+import eu.solidcraft.testkata.domain.biller.Biller
+import eu.solidcraft.testkata.domain.biller.BillerRepository
+import eu.solidcraft.testkata.domain.biller.Product
 
 import static org.springframework.util.Assert.notNull
 

@@ -1,6 +1,7 @@
 package eu.solidcraft.testkata
 
-import eu.solidcraft.testkata.domain.Biller
+import eu.solidcraft.testkata.domain.biller.Biller
+import eu.solidcraft.testkata.domain.transaction.TransactionAttempt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.test.context.ContextConfiguration
@@ -12,5 +13,6 @@ abstract class IntegrationSpec extends Specification {
 
     def cleanup() {
         mongoTemplate.dropCollection(Biller.class)
+        mongoTemplate.dropCollection(TransactionAttempt.class)
     }
 }

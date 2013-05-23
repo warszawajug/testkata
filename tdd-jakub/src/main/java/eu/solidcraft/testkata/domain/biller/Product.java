@@ -1,4 +1,4 @@
-package eu.solidcraft.testkata.domain;
+package eu.solidcraft.testkata.domain.biller;
 
 import org.bson.types.ObjectId;
 

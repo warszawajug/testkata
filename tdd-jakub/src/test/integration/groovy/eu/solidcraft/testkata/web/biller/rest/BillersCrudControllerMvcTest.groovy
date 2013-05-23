@@ -1,7 +1,7 @@
 package eu.solidcraft.testkata.web.biller.rest
 
-import eu.solidcraft.testkata.domain.Biller
-import eu.solidcraft.testkata.domain.BillerRepository
+import eu.solidcraft.testkata.domain.biller.Biller
+import eu.solidcraft.testkata.domain.biller.BillerRepository
 import eu.solidcraft.testkata.MvcIntegrationTest
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired

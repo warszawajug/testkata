@@ -1,6 +1,6 @@
 package eu.solidcraft.testkata.infrastructure;
 
-import eu.solidcraft.testkata.domain.ExternalBillerService;
+import eu.solidcraft.testkata.domain.biller.ExternalBillerService;
 
 public class ExternalBillerServiceMock implements ExternalBillerService {
     public final static String CORRECT_MSISDN = "1324657987";

@@ -1,5 +1,6 @@
 package eu.solidcraft.testkata.payment.rest
-import eu.solidcraft.testkata.domain.ExternalBillerService
+import eu.solidcraft.testkata.domain.biller.ExternalBillerService
+import eu.solidcraft.testkata.domain.transaction.TransactionAttemptRepository
 import eu.solidcraft.testkata.factories.BillerFactory
 import eu.solidcraft.testkata.web.payment.rest.BillPaymentController
 import spock.lang.Specification
@@ -11,7 +12,8 @@ class BillPaymentUnitSpec extends Specification {
     def "should check if payment is possible on external biller system"() {
         given:
             ExternalBillerService externalBillerService = Mock(ExternalBillerService)
-            billPaymentController = new BillPaymentController(externalBillerService)
+            TransactionAttemptRepository transactionAttemptRepository = Mock(TransactionAttemptRepository)
+            billPaymentController = new BillPaymentController(externalBillerService, transactionAttemptRepository)
 
         when:
             billPaymentController.pay(BillerFactory.CODE, msisdn, BillerFactory.PRODUCT_CODE)

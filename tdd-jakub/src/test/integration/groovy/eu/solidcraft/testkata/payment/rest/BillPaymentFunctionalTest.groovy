@@ -1,8 +1,8 @@
 package eu.solidcraft.testkata.payment.rest
 
 import eu.solidcraft.testkata.MvcIntegrationTest
-import eu.solidcraft.testkata.domain.BillerRepository
-import eu.solidcraft.testkata.domain.ExternalBillerService
+import eu.solidcraft.testkata.domain.biller.BillerRepository
+import eu.solidcraft.testkata.domain.biller.ExternalBillerService
 import eu.solidcraft.testkata.factories.BillerFactory
 import eu.solidcraft.testkata.infrastructure.ExternalBillerServiceMock
 import org.junit.Before

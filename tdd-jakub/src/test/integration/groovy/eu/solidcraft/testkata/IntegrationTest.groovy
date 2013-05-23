@@ -1,5 +1,5 @@
 package eu.solidcraft.testkata
-import eu.solidcraft.testkata.domain.Biller
+import eu.solidcraft.testkata.domain.biller.Biller
 import org.junit.After
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
