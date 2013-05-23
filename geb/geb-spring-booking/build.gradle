@@ -1,0 +1,46 @@
+apply plugin: "groovy"
+apply plugin: "idea"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    groovy "org.codehaus.groovy:groovy-all:2.1.0"
+
+    def gebVersion = "0.9.0"
+    def seleniumVersion = "2.32.0"
+    def spockVersion = "0.7"
+
+    testCompile "org.gebish:geb-core:$gebVersion"
+    testCompile "org.gebish:geb-spock:$gebVersion"
+    testCompile "org.spockframework:spock-core:$spockVersion-groovy-2.0"
+    testCompile "org.gebish:geb-junit4:$gebVersion"
+    testCompile("org.codehaus.groovy.modules.http-builder:http-builder:0.6") {
+        exclude(group: 'org.codehaus.groovy', module: 'groovy')
+    }
+    testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testCompile "net.sf.json-lib:json-lib:2.4:jdk15"
+    testCompile "junit:junit-dep:4.8.2"
+    testCompile "log4j:log4j:1.2.17"
+}
+
+task "firefoxTest"(type: Test) {
+//        testReportDir = reporting.file("$name/tests")
+//        testResultsDir = file("$buildDir/test-results/$name")
+//
+//        systemProperty "geb.build.reportsDir", reporting.file("$name/geb")
+//        systemProperty "geb.env", driver
+
+        // If you wanted to set the baseUrl in your build…
+        // systemProperty "geb.build.baseUrl", "http://myapp.com"
+}
+
+test {
+	dependsOn drivers.collect { tasks["${it}Test"] }
+	enabled = false
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.5'
+}
