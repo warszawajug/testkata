@@ -25,7 +25,7 @@ Installation and run
 References
 ---------
 
-I strongly recomment to read and use Geb's manual: The Book of Geb: [http://www.gebish.org/manual/current/all.html](http://www.gebish.org/manual/current/all.html).
+I strongly recommend to read and use Geb's manual: The Book of Geb: [http://www.gebish.org/manual/current/all.html](http://www.gebish.org/manual/current/all.html).
 Offline version of this book is attached to this project in `geb-manual-0.9` directory.
 
 We use Spring Webflow Example as a sample application to test. It's original repository is placed here: [https://github.com/SpringSource/spring-webflow-samples](https://github.com/SpringSource/spring-webflow-samples).
