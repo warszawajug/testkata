@@ -9,6 +9,6 @@ class WelcomeSpec extends GebReportingSpec {
         when:
             to WelcomePage
         then:
-        	at WelcomePage
+            at WelcomePage
     }
 }

@@ -8,5 +8,6 @@ class WelcomePage extends Page {
 
     static content = {
         heading { $('h1') }
+        login { $('a', text: contains('Login')) }
     }
 }
