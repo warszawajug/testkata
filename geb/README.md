@@ -10,13 +10,13 @@ Installation and run
 
 * First console:
 
-    cd spring-webflow-samples/booking-mvc
-    mvn tomcat:run
+        cd spring-webflow-samples/booking-mvc
+        mvn tomcat:run
 
 * Second console:
 
-    cd geb-spring-booking
-    ./gradlew test
+        cd geb-spring-booking
+        ./gradlew test
 
 * Open up `geb-manual-0.9/all.html` in your favourite browser
 
