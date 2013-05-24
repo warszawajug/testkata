@@ -22,27 +22,28 @@ Although Spock uses a different terminology, many of its concepts and features a
 
 class Chapter1SpockBasicsSpecification extends Specification {
 
+    // TODO: declare a list as a field and initialize
+
     def 'dodać 2 + 2 równa się 4'() {
         expect:
         2 + 2 == 4
     }
 
     def 'pusta lista jest pusta'() {
-        setup:
-        List aList = []
-
         expect:
         aList.empty
     }
 
     def 'gdy dodamy coś do listy, to już nie jest pusta'() {
-        given:
-        List aList = []
-
         when:
         aList << 'something'
 
         then:
         aList.size() == 1
+    }
+
+    def 'a tu lista nadal pusta'() {
+        expect:
+        aList.empty
     }
 }
