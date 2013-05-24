@@ -100,9 +100,10 @@ class Chapter1SpockBasicsSpecification extends Specification {
         matchesValidUser(person)
     }
 
-    private matchesValidUser(Person person) {
-        // TODO: check if person is older than 18 and name starts with capital letter
-        // hint: try to use with with(Object, Closure) to avoid referencing person instance many times
-        return false
+    private void matchesValidUser(Person person) {
+        with(person) {
+            assert age >= 10
+            assert name.charAt(0).isUpperCase()
+        }
     }
 }
