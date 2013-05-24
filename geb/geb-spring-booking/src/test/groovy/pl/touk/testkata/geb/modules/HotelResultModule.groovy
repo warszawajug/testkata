@@ -10,7 +10,7 @@ class HotelResultModule extends Module {
         addressCity { cell(1).text() }
         state { cell(2).text() }
         zip { cell(3).text() }
-        action { cell(3) }
-        viewHotel { $("a", text: contains('View Hotel')) }
+        action { cell(4) }
+        viewHotel { action.find('a') }
     }
 }
