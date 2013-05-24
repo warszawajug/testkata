@@ -60,7 +60,9 @@ class Chapter2EasyMocking extends Specification {
     def 'mock ze spockiem'() {
         given:
         personDaoMock = Mock(PersonDao)
-        // TODO: mock with double right shit operator and closure
+        personDaoMock.create(*_) >> { String name, int age ->
+            return age / 2
+        }
 
         when:
         int resultId = personDaoMock.create('whatever', 50)
