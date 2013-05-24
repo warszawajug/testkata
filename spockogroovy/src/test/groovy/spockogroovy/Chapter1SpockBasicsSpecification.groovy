@@ -1,6 +1,5 @@
 package spockogroovy
 
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -91,34 +90,5 @@ class Chapter1SpockBasicsSpecification extends Specification {
         cleanup: 'zaś na koniec sobie wyczyścimy obie mapy'
         aMap.clear()
         otherMap.clear()
-    }
-
-    @Ignore('no specific solution for this exercise')
-    def 'zacne asercje i komunikaty, milordzie'() {
-        given:
-        def anObject = new Object()
-        boolean aBoolean = false
-        int aNumber = 5
-        String aString = 'siała ciotka mak, nie wiedziała jak'
-        String multilineString = """
-<eshl0x> napisałem w piątek lesty do api
-<eshlox> wszystkie przyszły
-<eshlox> dz1ś odpalam i okowa nie działa
-<wooboodoo> piątek był + nie chciały Ci weekendu psuć"""
-        List aList = [1, 2, 123, 462, 6, 3]
-        Map aMap = [one: 'o', two: 'ooo', eight: 'oooooooo']
-
-        expect:
-        anObject
-        aBoolean
-        aNumber == 10
-        aString == 'siała baba mak, nie wiedziała jak'
-        multilineString == """
-<eshlox> napisałem w piątek testy do api
-<eshlox> wszystkie przeszły
-<eshlox> dziś odpalam i połowa nie działa
-<wooboodoo> piątek był - nie chciały Ci weekendu psuć"""
-        aList == [1, 2, 132, 462, 6, 3]
-        aMap == [one: 'o', two: 'oo', eight: 'oooooooo']
     }
 }
