@@ -112,6 +112,7 @@ class Chapter1SpockBasicsSpecification extends Specification {
         throw new RuntimeException('TADAM!')
 
         then:
-        true // TODO: replace 'true' with exception check - use thrown() builtin method. Assert the exception message.
+        def ex = thrown(RuntimeException)
+        ex.message == 'TADAM!'
     }
 }
