@@ -3,7 +3,8 @@
 2. postawić sobie MongoDB z bazą testkatadev i z userem testkata:testkata
 3. odpalić aplikację by siągnęła zależności
 
-=============== Stawianie MongoDB =================
+Stawianie MongoDB
+-----------------------------
 
 Dla Ubuntu/Debiana Mongo można postawić tak:
 
@@ -37,7 +38,8 @@ Teraz, łączymy się z Mongo i zakładamy bazę i usera:
     > db.addUser('testkata', 'testkata')
 
 
-================== Odpalanie aplikacji ================
+Odpalanie aplikacji
+-----------------------------
 
 Zakładając że masz Windows/Linux/Unix, wejdź do katalogu z shella i uruchom odpowiednio
 
@@ -49,13 +51,15 @@ lub
 
 No i trzeba chwilę poczekać, na ściągnięcie całego Internetu
 
-================== Use case który implementujemy ==================
-# customer wysyła dane do płatności (id billera, msisdn customera, id produktu)
-# system sprawdza, w zewnętrznym systemie billera, czy płatność jest możliwa dla danego msisdn'a
-# system dolicza opłaty
-# system przekazuje polecenie przelewu do core'owego systemu bankowego
-# system zapisuje płatność
-# system powiadamia zewnętrzny system billera, o udanej płatności
-# system zwraca customerowi potwierdzenie udanej płatności
+Use case który implementujemy
+-----------------------------
+
+* customer wysyła dane do płatności (id billera, msisdn customera, id produktu)
+* system sprawdza, w zewnętrznym systemie billera, czy płatność jest możliwa dla danego msisdn'a
+* system dolicza opłaty
+* system przekazuje polecenie przelewu do core'owego systemu bankowego
+* system zapisuje płatność
+* system powiadamia zewnętrzny system billera, o udanej płatności
+* system zwraca customerowi potwierdzenie udanej płatności
 
 W przypadku niepowodzenia, system musi zapisać próbę płatności.
