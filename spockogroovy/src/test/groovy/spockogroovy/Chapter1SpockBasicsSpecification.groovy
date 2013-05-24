@@ -1,5 +1,6 @@
 package spockogroovy
 
+import spock.lang.Shared
 import spock.lang.Specification
 
 /*
@@ -22,7 +23,7 @@ Although Spock uses a different terminology, many of its concepts and features a
 
 class Chapter1SpockBasicsSpecification extends Specification {
 
-    List aList = [] // TODO: annotate field with spock.lang.Shared
+    @Shared List aList = []
 
     def 'dodać 2 + 2 równa się 4'() {
         expect:
