@@ -18,6 +18,7 @@
     <module>FestHamcrestKata</module>
     <module>tdd-gwt</module>
     <module>testng-marek</module>
+    <module>tdd-krzysztof</module>
   </modules>
 
 </project>
