@@ -17,6 +17,7 @@
     <module>caliper</module>
     <module>FestHamcrestKata</module>
     <module>tdd-gwt</module>
+    <module>testng-marek</module>
   </modules>
 
 </project>
