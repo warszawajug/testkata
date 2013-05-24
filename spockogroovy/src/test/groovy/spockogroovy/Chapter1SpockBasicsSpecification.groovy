@@ -22,7 +22,7 @@ Although Spock uses a different terminology, many of its concepts and features a
 
 class Chapter1SpockBasicsSpecification extends Specification {
 
-    List aList = []
+    List aList = [] // TODO: annotate field with spock.lang.Shared
 
     def 'dodać 2 + 2 równa się 4'() {
         expect:
@@ -42,8 +42,8 @@ class Chapter1SpockBasicsSpecification extends Specification {
         aList.size() == 1
     }
 
-    def 'a tu lista nadal pusta'() {
+    def 'jednak nie tym razem! lista już nie pusta'() {
         expect:
-        aList.empty
+        aList.contains('something')
     }
 }
