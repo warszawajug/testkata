@@ -6,29 +6,46 @@
 =============== Stawianie MongoDB =================
 
 Dla Ubuntu/Debiana Mongo można postawić tak:
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/10gen.list 
-sudo apt-get update
-sudo apt-get install mongodb-10gen
+
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+    echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/10gen.list
+    sudo apt-get update
+    sudo apt-get install mongodb-10gen
+
+Dla Fedory 18
+
+    sudo yum install mongodb-server
 
 Teraz startujemy bazę:
-sudo service mongodb start
+
+Ubuntu:
+
+    sudo service mongodb start
+
+Fedora
+
+    sudo service mongod start
 
 Teraz edytujemy /etc/mongodb.conf i odkomentowujemy
-auth = true
+
+    auth = true
 
 Teraz, łączymy się z Mongo i zakładamy bazę i usera:
-# mongo
-> use testkatadev
-> db.addUser('testkata', 'testkata')
+
+    # mongo
+    > use testkatadev
+    > db.addUser('testkata', 'testkata')
 
 
 ================== Odpalanie aplikacji ================
 
 Zakładając że masz Windows/Linux/Unix, wejdź do katalogu z shella i uruchom odpowiednio
-./gradlew jettyRun
+
+    ./gradlew jettyRun
+
 lub
-./gradlew.bat jettyRun
+
+    ./gradlew.bat jettyRun
 
 No i trzeba chwilę poczekać, na ściągnięcie całego Internetu
 
