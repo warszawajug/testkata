@@ -22,7 +22,7 @@ Although Spock uses a different terminology, many of its concepts and features a
 
 class Chapter1SpockBasicsSpecification extends Specification {
 
-    // TODO: declare a list as a field and initialize
+    List aList = []
 
     def 'dodać 2 + 2 równa się 4'() {
         expect:
