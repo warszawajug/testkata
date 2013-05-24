@@ -1,0 +1,74 @@
+// ref: http://gradle.org/docs/current/dsl/index.html
+
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'h2'
+apply plugin: 'jetty' // only needed to run embed H2 web db console
+
+def langLevel = 1.7
+
+sourceCompatibility = langLevel
+targetCompatibility = langLevel
+
+group = 'spockogroovy'
+version = '0.1'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.1.3'
+    compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1' // this one helps us parse not necessary well-formatted HTML
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testRuntime 'com.h2database:h2:1.3.171' // SQL exercises need any relational database
+}
+
+idea {
+    project {
+        jdkName = langLevel
+        languageLevel = langLevel
+    }
+}
+
+h2 {
+    tcpPort = 9092
+    webPort = 8082
+
+    vehicles {
+        scripts = [
+                'src/test/resources/vehicles-structure.sql',
+                'src/test/resources/vehicles-init-data.sql'
+        ]
+    }
+}
+
+jettyRun.doFirst {
+    h2start.execute()
+}
+
+// Configures the build script classpath for this project.
+// Necessary for H2 plugin
+buildscript {
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
+            name = 'GitHub'
+            addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
+        }
+    }
+
+    dependencies {
+        classpath 'jamescarr:h2-gradle-plugin:0.8.2'
+        classpath 'com.h2database:h2:1.3.171'
+    }
+}
+
+// commented not to overwrite modified gradlew scripts by accident
+//task wrapper(type: Wrapper) {
+//    gradleVersion = '1.6'
+//}

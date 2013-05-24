@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+     xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+        >
+
+<channel>
+	<title>Team Blog</title>
+	<atom:link href="http://touk.pl/blog/feed/" rel="self" type="application/rss+xml" />
+	<link>http://touk.pl/blog</link>
+	<description>We create information and telecommunication technologies for large and medium-sized enterprises. They are based on recognized, primarily open standards and technologies, which are to guarantee our customers the highest quality and stability of information systems development. At the same time building our competencies, we are trying to shape such standards and support the development of open technologies.</description>
+	<lastBuildDate>Wed, 24 Oct 2012 10:05:44 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.org/?v=3.4.1</generator>
+		<item>
+		<title>Inconsistent Dependency Injection to domains with Grails</title>
+		<link>http://touk.pl/blog/en/2012/10/18/inconsistent-dependency-injection-to-domains-with-grails/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=inconsistent-dependency-injection-to-domains-with-grails</link>
+		<comments>http://touk.pl/blog/en/2012/10/18/inconsistent-dependency-injection-to-domains-with-grails/#comments</comments>
+		<pubDate>Thu, 18 Oct 2012 11:00:00 +0000</pubDate>
+		<dc:creator>Tomasz Kalkosiński</dc:creator>
+				<category><![CDATA[Development & Design]]></category>
+
+		<guid isPermaLink="false">http://touk.pl/blog/?guid=5dde766d3eaeffc4111002fb4babbdb6</guid>
+		<description><![CDATA[I've encountered strange behavior with a domain class in my project: services that should be injected were null. I've became suspicious as why is that? Services are injected properly in other domain classes so why this one is different? Constructors ex...]]></description>
+		<wfw:commentRss>http://touk.pl/blog/en/2012/10/18/inconsistent-dependency-injection-to-domains-with-grails/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+		<item>
+		<title>Friends with benefits</title>
+		<link>http://touk.pl/blog/en/2012/10/15/friends-with-benefits/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=friends-with-benefits</link>
+		<comments>http://touk.pl/blog/en/2012/10/15/friends-with-benefits/#comments</comments>
+		<pubDate>Mon, 15 Oct 2012 21:12:00 +0000</pubDate>
+		<dc:creator>Jakub Nabrdalik</dc:creator>
+				<category><![CDATA[Development & Design]]></category>
+
+		<guid isPermaLink="false">http://touk.pl/blog/?guid=dcc8ab29c980601e95b3c4d6078edd47</guid>
+		<description><![CDATA[Back when I was at my first university, working on my B.Sc., it was obvious for us, students, to always try to get into any possible, open IT event in the town. We were hungry for knowledge, for experience, anxious looking at the future. 
+
+One of the ...]]></description>
+		<wfw:commentRss>http://touk.pl/blog/en/2012/10/15/friends-with-benefits/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+<enclosure url="" length="" type="" />
+		</item>
+		<item>
+		<title>Scrum in Poland &#8211; TouK</title>
+		<link>http://touk.pl/blog/en/2012/10/09/scrum-in-poland-touk/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=scrum-in-poland-touk</link>
+		<comments>http://touk.pl/blog/en/2012/10/09/scrum-in-poland-touk/#comments</comments>
+		<pubDate>Tue, 09 Oct 2012 12:09:08 +0000</pubDate>
+		<dc:creator>Witek Wołejszo</dc:creator>
+				<category><![CDATA[Development & Design]]></category>
+
+		<guid isPermaLink="false">http://touk.pl/blog/?p=10541</guid>
+		<description><![CDATA[TouK case study regarding Scrum adoption in Polish companies has just been published by our colleagues from Fluidcircle.]]></description>
+		<wfw:commentRss>http://touk.pl/blog/en/2012/10/09/scrum-in-poland-touk/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		</item>
+	</channel>
+</rss>
