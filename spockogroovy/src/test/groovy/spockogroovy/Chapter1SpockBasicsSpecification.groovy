@@ -106,4 +106,12 @@ class Chapter1SpockBasicsSpecification extends Specification {
             assert name.charAt(0).isUpperCase()
         }
     }
+
+    def 'jaki leci mi wyjątek?'() {
+        when:
+        throw new RuntimeException('TADAM!')
+
+        then:
+        true // TODO: replace 'true' with exception check - use thrown() builtin method. Assert the exception message.
+    }
 }
