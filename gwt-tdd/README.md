@@ -30,11 +30,7 @@ http://jukito.arcbees.com/
 * TestBrowserHistoryTestImpl
 * EnvironmentDependentModulesTest
 * TestEventBusTestImpl
-* TestApplicationFlowManager
-* TestFakePlaceManager
-* TestOnPathExitHandler
-* TestAddressWidgetPresenter
-* TestDocumentToCollectWidgetPresenter
+
 
 ## Uwagi
 * Scope @TestSingleton jest używany domyślnie dla klas. Interfejsy są bindowane w normalnym Scope
