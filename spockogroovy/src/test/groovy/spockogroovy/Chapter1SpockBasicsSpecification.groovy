@@ -1,5 +1,6 @@
 package spockogroovy
 
+import spock.lang.Ignore
 import spock.lang.Specification
 
 /*
@@ -25,5 +26,12 @@ class Chapter1SpockBasicsSpecification extends Specification {
     def 'dodać 2 + 2 równa się 4'() {
         expect:
         2 + 2 == 4
+    }
+
+    @Ignore('declare an empty List and remove the annotation. Try using "setup" or "given" block')
+    def 'pusta lista jest pusta'() {
+
+        expect:
+        aList.empty
     }
 }
