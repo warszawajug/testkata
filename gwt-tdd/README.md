@@ -27,8 +27,10 @@ http://jukito.arcbees.com/
 * klasa wewnętrzna z modułami Guice:   public static class A extends JukitoModule
  
 ## Przykłady
+* RespectProvidesAnnotationInModuleTest (jukito code base)
+* RespectTestScopeWhenUsingAbstractModuleTest (jukito code base)
 * TestBrowserHistoryTestImpl
-* EnvironmentDependentModulesTest
+* EnvironmentDependentModulesTest (jukito code base)
 * TestEventBusTestImpl
 
 
