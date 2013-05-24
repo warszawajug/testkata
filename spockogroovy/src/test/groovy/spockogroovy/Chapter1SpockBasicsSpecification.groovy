@@ -2,6 +2,7 @@ package spockogroovy
 
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /*
 Although Spock uses a different terminology, many of its concepts and features are inspired from JUnit.
@@ -116,6 +117,7 @@ class Chapter1SpockBasicsSpecification extends Specification {
         ex.message == 'TADAM!'
     }
 
+    @Unroll('Z nicków "#player1" oraz "#player2" dłuższy ma #expected znaków')
     def 'test zparametryzowany'() {
         given:
         int p1 = player1.size()
@@ -128,8 +130,9 @@ class Chapter1SpockBasicsSpecification extends Specification {
         max == expected
 
         where:
-        player1 | player2 | expected
-        // TODO: add couple rows to the 'table'
-        // hint: check what's up with spock.lang.Unroll annotation
+        player1  | player2        | expected
+        'Stefan' | 'Jan'          | 6
+        'Bolo'   | 'Rozkminiator' | 12
+        'Pryt'   | 'Hardkor!'     | 8
     }
 }
