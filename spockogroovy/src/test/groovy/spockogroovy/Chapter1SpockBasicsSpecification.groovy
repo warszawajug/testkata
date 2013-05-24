@@ -26,8 +26,15 @@ class Chapter1SpockBasicsSpecification extends Specification {
     @Shared List aList = []
 
     def setup() {
-        // TODO: clear or reinitialize list here
+        aList.clear()
+        println 'setup() runs before every feature method'
     }
+
+    def cleanup() { println 'cleanup() runs after every feature method' }
+
+    def setupSpec() { println 'setupSpec() runs only once before the first feature method' }
+
+    def cleanupSpec() { println 'cleanupSpec() run only once after the last feature method' }
 
     def 'dodać 2 + 2 równa się 4'() {
         expect:
