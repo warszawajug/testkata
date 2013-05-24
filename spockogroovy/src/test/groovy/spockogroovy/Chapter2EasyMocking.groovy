@@ -57,4 +57,17 @@ class Chapter2EasyMocking extends Specification {
         person.name == 'updated!'
     }
 
+    def 'mock ze spockiem'() {
+        given:
+        // TODO: use Spock builtin Mock() method
+
+        when:
+        def fourties = personDaoMock.findAllOlderThan(40)
+
+        then:
+        noExceptionThrown()
+        fourties.size() == 2
+        fourties.first() instanceof Person
+    }
+
 }
