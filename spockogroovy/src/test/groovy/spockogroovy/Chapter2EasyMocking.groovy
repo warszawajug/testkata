@@ -60,15 +60,16 @@ class Chapter2EasyMocking extends Specification {
     def 'mock ze spockiem'() {
         given:
         personDaoMock = Mock(PersonDao)
-        personDaoMock.findAllOlderThan(_) >> [new Person(), new Person()]
+        // TODO: mock create() method with triple right shift operator
 
         when:
-        def fourties = personDaoMock.findAllOlderThan(40)
+        def resultIds = []
+        4.times {
+            resultIds << personDaoMock.create('whatever', 99)
+        }
 
         then:
-        noExceptionThrown()
-        fourties.size() == 2
-        fourties.first() instanceof Person
+        resultIds == [1, 5, 123, 20]
     }
 
 }
