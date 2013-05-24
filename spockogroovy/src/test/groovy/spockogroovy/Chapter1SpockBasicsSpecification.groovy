@@ -91,4 +91,18 @@ class Chapter1SpockBasicsSpecification extends Specification {
         aMap.clear()
         otherMap.clear()
     }
+
+    def 'sprawdź obiekt przy pomocy dodatkowej metody'() {
+        given:
+        def person = new Person('Stefan', 27)
+
+        expect:
+        matchesValidUser(person)
+    }
+
+    private matchesValidUser(Person person) {
+        // TODO: check if person is older than 18 and name starts with capital letter
+        // hint: try to use with with(Object, Closure) to avoid referencing person instance many times
+        return false
+    }
 }
