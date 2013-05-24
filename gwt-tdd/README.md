@@ -2,31 +2,31 @@
 * Podstawy
 * Jukito - http://jukito.arcbees.com/
 * gwt-test-utils - https://github.com/gwt-test-utils/gwt-test-utils
-* Po≥±czenie Jukito i GwtTest - @RunWith(JukitoGwtTestRunner.class)
-* Modu≥y Testowe
+* Po≈ÇƒÖczenie Jukito i GwtTest - @RunWith(JukitoGwtTestRunner.class)
+* Modu≈Çy Testowe
 * Request Factory
 * Edytory i Driver
  
 # Podstawy
 * SUT - System Under Test
 * DOC - Dependend On  Component
-* Fixtura - zbudowanie mikro ∂rodowiska dla SUT- czyli  przygotowanie DOC  
+* Fixtura - zbudowanie mikro ≈õrodowiska dla SUT- czyli  przygotowanie DOC  
 * BDD - Given, When, Then
-* nazwy testÛw
+* nazwy test√≥w
 * Practical Unit Testing - Tomek Kaczanowski
  
 # Jukito
 http://jukito.arcbees.com/
-## Moøliwo∂ci Jukito
+## Mo≈ºliwo≈õci Jukito
 * wstrzykiwanie DOC na pola oraz do metod
 * resetowanie DOC oraz SUT przed wykonaniem kolejnej metody testowej  - @TestSingleton
-* W≥asne modu≥y Guice
+* W≈Çasne modu≈Çy Guice
 
 ## Konfiguracja Jukito
 * @RunWith(JukitoRunner.class) na klasie testu
-* klasa wewnÍtrzna z modu≥ami Guice:   public static class A extends JukitoModule
+* klasa wewnƒôtrzna z modu≈Çami Guice:   public static class A extends JukitoModule
  
-## Przyk≥ady
+## Przyk≈Çady
 * TestApplicationFlowManager
 * TestFakePlaceManager
 * TestOnPathExitHandler
@@ -34,62 +34,62 @@ http://jukito.arcbees.com/
 * TestDocumentToCollectWidgetPresenter
 
 ## Uwagi
-* Scope @TestSingleton jest uøywany domy∂lnie dla klas. Interfejsy s± bindowane w normalnym Scope
+* Scope @TestSingleton jest u≈ºywany domy≈õlnie dla klas. Interfejsy sƒÖ bindowane w normalnym Scope
 
 # gwt-test-utils
 https://github.com/gwt-test-utils/gwt-test-utils
-## Moøliwo∂ci
+## Mo≈ºliwo≈õci
 * brak problemu z GWT.create()
-* symulacja przegl±darki (loopend, wype≥nienie pola tekstowego, klikanie, ustawianie locale itp)
-* generowanie kodu w te∂cie (Editors, i18n)
+* symulacja przeglƒÖdarki (loopend, wype≈Çnienie pola tekstowego, klikanie, ustawianie locale itp)
+* generowanie kodu w te≈õcie (Editors, i18n)
  
 ## Konfiguracja
 * extends GwtTest
 * @GwtModule("com.efigence.efinity.gxt.Efinity-web-gxt") na klasie testu
-* gwt-test-utils.properties w src/test/resources z deklaracjami modu≥Ûw *.gwt.xml
+* gwt-test-utils.properties w src/test/resources z deklaracjami modu≈Ç√≥w *.gwt.xml
 * com.efigence.efinity.gxt.Efinity-web-gxt = gwt-module
  
-# Po≥±czenie Jukito i GwtTest - @RunWith(JukitoGwtTestRunner.class)
-## Moøliwo∂ci
-* Wstrzykiwanie zaleøno∂ci jak w czystym Jukito
+# Po≈ÇƒÖczenie Jukito i GwtTest - @RunWith(JukitoGwtTestRunner.class)
+## Mo≈ºliwo≈õci
+* Wstrzykiwanie zale≈ºno≈õci jak w czystym Jukito
 * Wszystkie dobrodziejstwa gwt-test-utils
 
 ## Konfiguracja
 * To co typowo dla gwt-test-utils oraz Jukito
 zamiast @RunWith(JukitoRunner.class) stosujemy @RunWith(JukitoGwtTestRunner.class) na klasie testu
 
-## Przyk≥ady
+## Przyk≈Çady
 * TestAddressDataEditor - testy prostego edytora
 * TestCancellationTypeEditor - testy na edytor zbudowany jako grupa radio button'ow
 * TestComboBoxEditor - testy na edytor Enum lub String'a zbudowany jako comboBox
-* TestTwoAddressOneDriver - test bardziej z≥oøonego edytora
-* TestSecuringTheSecureButton - test akceptacyjny dla konfiguracji uprawnieÒ w danym wdroøeniu
+* TestTwoAddressOneDriver - test bardziej z≈Ço≈ºonego edytora
+* TestSecuringTheSecureButton - test akceptacyjny dla konfiguracji uprawnie≈Ñ w danym wdro≈ºeniu
  
 
 # Request Factory
 * Operowanie na projekcjach modelu JPA
 * Brak problemu z Lazy Init
 * Automatyczne rewrittery
-* Automatyczny binding do EdytorÛw
+* Automatyczny binding do Edytor√≥w
 * ATP na etapie kompilacji - kontrola kontraktu
 
 # Edytory i Driver
 * Abstrakcja i automat do ustawiania modelu i pobierania modelu z formatki
-* Graf edytorÛw odpowiada grafowi domeny
-* Stanowy driver wpisuje modele do edytorÛw i po zakoÒczeniu edycji przez user'a aktualizuje modele
+* Graf edytor√≥w odpowiada grafowi domeny
+* Stanowy driver wpisuje modele do edytor√≥w i po zako≈Ñczeniu edycji przez user'a aktualizuje modele
 
 # EDRunner 
-# Pu≥apki
+# Pu≈Çapki
 
 # Usecases a la WebDriver
-## Jako U rejestruje swÛj profil
-* Otwieram aplikacjÍ
+## Jako U rejestruje sw√≥j profil
+* Otwieram aplikacjƒô
 * Klikam "rejestruj profil"
-* Wype≥niam formatkÍ na ekranie
+* Wype≈Çniam formatkƒô na ekranie
 * Klikam zapisz
-* Przegl±dam stronÍ swojego nowego profilu i oczekujÍ øe dane zosta≥y zapisane
+* PrzeglƒÖdam stronƒô swojego nowego profilu i oczekujƒô ≈ºe dane zosta≈Çy zapisane
 
-## Jako U edytujÍ swÛj profil
+## Jako U edytujƒô sw√≥j profil
 * Klikam "Edytuj profil"
 * Zmieniam adres zamieszkania
-* Zapisuje zmiany i oczekujÍ øe mÛj profil zosta≥ zakutalizowany
+* Zapisuje zmiany i oczekujƒô ≈ºe m√≥j profil zosta≈Ç zakutalizowany
