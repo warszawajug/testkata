@@ -60,7 +60,7 @@ class Chapter2EasyMocking extends Specification {
     def 'mock ze spockiem'() {
         given:
         personDaoMock = Mock(PersonDao)
-        // TODO: mock create() method with triple right shift operator
+        personDaoMock.create(_, _) >>> [1, 5, 123, 20] // any iterable can be used
 
         when:
         def resultIds = []
