@@ -60,16 +60,19 @@ class Chapter2EasyMocking extends Specification {
     def 'mock ze spockiem'() {
         given:
         personDaoMock = Mock(PersonDao)
-        personDaoMock.create(_, _) >>> [1, 5, 123, 20] // any iterable can be used
+        // TODO: mock with double right shit operator and closure
 
         when:
-        def resultIds = []
-        4.times {
-            resultIds << personDaoMock.create('whatever', 99)
-        }
+        int resultId = personDaoMock.create('whatever', 50)
 
         then:
-        resultIds == [1, 5, 123, 20]
+        resultId == 25
+
+        when:
+        resultId = personDaoMock.create('whatever', 80)
+
+        then:
+        resultId == 40
     }
 
 }
