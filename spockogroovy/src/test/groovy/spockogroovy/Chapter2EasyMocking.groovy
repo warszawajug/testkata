@@ -59,7 +59,8 @@ class Chapter2EasyMocking extends Specification {
 
     def 'mock ze spockiem'() {
         given:
-        // TODO: use Spock builtin Mock() method
+        personDaoMock = Mock(PersonDao)
+        personDaoMock.findAllOlderThan(_) >> [new Person(), new Person()]
 
         when:
         def fourties = personDaoMock.findAllOlderThan(40)
