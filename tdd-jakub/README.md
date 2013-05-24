@@ -1,7 +1,8 @@
 Żeby przygotować się w pełni do zajęć, należy:
-1. mieć JDK 7
-2. postawić sobie MongoDB z bazą testkatadev i z userem testkata:testkata
-3. odpalić aplikację by siągnęła zależności
+
+1.  mieć JDK 7
+2.  postawić sobie MongoDB z bazą testkatadev i z userem testkata:testkata
+3.  odpalić aplikację by siągnęła zależności
 
 Stawianie MongoDB
 -----------------------------
