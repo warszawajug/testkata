@@ -61,10 +61,7 @@ zamiast @RunWith(JukitoRunner.class) stosujemy @RunWith(JukitoGwtTestRunner.clas
 
 ## Przykłady
 * TestAddressDataEditor - testy prostego edytora
-* TestCancellationTypeEditor - testy na edytor zbudowany jako grupa radio button'ow
-* TestComboBoxEditor - testy na edytor Enum lub String'a zbudowany jako comboBox
 * TestTwoAddressOneDriver - test bardziej złożonego edytora
-* TestSecuringTheSecureButton - test akceptacyjny dla konfiguracji uprawnień w danym wdrożeniu
  
 
 # Request Factory
