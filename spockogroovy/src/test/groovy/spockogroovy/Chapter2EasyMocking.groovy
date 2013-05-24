@@ -22,4 +22,27 @@ class Chapter2EasyMocking extends Specification {
         person.id == 5
     }
 
+    def 'mock z map coercion dla wielu metod'() {
+        given:
+        // TODO: cast map of closures to the PersonDao with 'as' operator
+
+        when:
+        int id = personDaoMock.create('whatever', 44)
+
+        then:
+        id == 5
+
+        when:
+        def person = personDaoMock.findById(8)
+
+        then:
+        person.id == 8
+
+        when:
+        personDaoMock.update(person)
+
+        then:
+        person.name == 'updated!'
+    }
+
 }
