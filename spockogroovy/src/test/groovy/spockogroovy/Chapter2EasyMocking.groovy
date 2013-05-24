@@ -8,7 +8,11 @@ class Chapter2EasyMocking extends Specification {
 
     def 'mock z groovy closure coercion'() {
         given:
-        // TODO: cast closure to PersonDao with 'as' operator
+        personDaoMock = {
+            def person = new Person()
+            person.id = 5 // id is private and has no setter!
+            return person
+        } as PersonDao
 
         when:
         def person = personDaoMock.findById(5)
