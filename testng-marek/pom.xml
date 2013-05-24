@@ -7,6 +7,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng_version}</version>
@@ -20,6 +31,13 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -50,6 +68,7 @@
 	<properties>
 		<testng_version>6.8</testng_version>
         <fest_version>2.0M10</fest_version>
+        <spring.version>3.2.2.RELEASE</spring.version>
         <maven-surefire-plugin.version>2.6</maven-surefire-plugin.version>
 	</properties>
 </project>
