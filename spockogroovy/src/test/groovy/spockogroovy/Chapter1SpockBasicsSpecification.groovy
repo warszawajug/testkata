@@ -91,4 +91,34 @@ class Chapter1SpockBasicsSpecification extends Specification {
         aMap.clear()
         otherMap.clear()
     }
+
+    def 'zacne asercje i komunikaty, milordzie'() {
+        given:
+        def anObject = new Object()
+        boolean aBoolean = false
+        int aNumber = 5
+        String aString = 'siała ciotka mak, nie wiedziała jak'
+        String multilineString = """
+<eshl0x> napisałem w piątek lesty do api
+<eshlox> wszystkie przyszły
+<eshlox> dz1ś odpalam i okowa nie działa
+<wooboodoo> piątek był + nie chciały Ci weekendu psuć"""
+        List aList = [1, 2, 123, 462, 6, 3]
+        Map aMap = [one: 'o', two: 'ooo', eight: 'oooooooo']
+
+        // TODO: try to remove assertions one by one and see failure messages for each type
+        // hint: look for the link <Click to see the difference> in the IDE console output window
+        expect:
+        anObject
+        aBoolean
+        aNumber == 10
+        aString == 'siała baba mak, nie wiedziała jak'
+        multilineString == """
+<eshlox> napisałem w piątek testy do api
+<eshlox> wszystkie przeszły
+<eshlox> dziś odpalam i połowa nie działa
+<wooboodoo> piątek był - nie chciały Ci weekendu psuć"""
+        aList == [1, 2, 132, 462, 6, 3]
+        aMap == [one: 'o', two: 'oo', eight: 'oooooooo']
+    }
 }
