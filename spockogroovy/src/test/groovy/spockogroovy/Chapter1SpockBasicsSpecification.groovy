@@ -25,6 +25,10 @@ class Chapter1SpockBasicsSpecification extends Specification {
 
     @Shared List aList = []
 
+    def setup() {
+        // TODO: clear or reinitialize list here
+    }
+
     def 'dodać 2 + 2 równa się 4'() {
         expect:
         2 + 2 == 4
@@ -43,8 +47,8 @@ class Chapter1SpockBasicsSpecification extends Specification {
         aList.size() == 1
     }
 
-    def 'jednak nie tym razem! lista już nie pusta'() {
+    def 'i ponownie lista pusta'() {
         expect:
-        aList.contains('something')
+        aList.empty
     }
 }
