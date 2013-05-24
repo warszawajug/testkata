@@ -22,8 +22,9 @@ Although Spock uses a different terminology, many of its concepts and features a
 
 class Chapter1SpockBasicsSpecification extends Specification {
 
+    // TODO: change method name to a String literal
     def twoPlusTwoMakesFour() {
         expect:
-        assert 2 + 2 == 4
+        assert 2 + 2 == 4 // TODO: remove assert keyword
     }
 }
