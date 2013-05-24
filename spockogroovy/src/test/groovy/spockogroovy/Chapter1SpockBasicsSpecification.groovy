@@ -39,7 +39,8 @@ class Chapter1SpockBasicsSpecification extends Specification {
         given:
         List aList = []
 
-        // TODO: add something to the list, use "when" block
+        when:
+        aList << 'something'
 
         then:
         aList.size() == 1
