@@ -1,0 +1,14 @@
+<!--
+  ~ Copyright (c) 2000-2012, Efinity. All rights reserved.
+  -->
+
+<module>
+  <inherits name="pl.org.kata.test.Project"/>
+
+  <extend-property name="locale" values="en"/>
+  <set-property name="locale" value="en" />
+
+
+  <source path="client"/>
+  <source path="shared"/>
+</module>

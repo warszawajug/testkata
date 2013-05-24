@@ -1,4 +1,4 @@
-package pl.org.kata.test.client.core;
+package pl.org.kata.test.client.core.placemanager;
 
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;

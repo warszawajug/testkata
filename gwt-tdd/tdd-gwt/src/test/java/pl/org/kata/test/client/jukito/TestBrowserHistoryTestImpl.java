@@ -1,6 +1,6 @@
 package pl.org.kata.test.client.jukito;
 
-import pl.org.kata.test.client.core.IBrowserHistory;
+import pl.org.kata.test.client.core.placemanager.IBrowserHistory;
 import pl.org.kata.test.testing.core.BrowserHistoryTestImpl;
 
 import javax.inject.Inject;

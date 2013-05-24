@@ -4,7 +4,7 @@
 
 package pl.org.kata.test.client.modules;
 
-import pl.org.kata.test.client.core.IBrowserHistory;
+import pl.org.kata.test.client.core.placemanager.IBrowserHistory;
 import pl.org.kata.test.client.tools.MockButton;
 import pl.org.kata.test.client.tools.SynchronizedEventBusTestImpl;
 import pl.org.kata.test.testing.core.BrowserHistoryTestImpl;

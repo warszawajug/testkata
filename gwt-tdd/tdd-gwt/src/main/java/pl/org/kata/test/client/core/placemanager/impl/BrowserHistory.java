@@ -2,9 +2,9 @@
  * Copyright (c) 2000-2012, Efinity. All rights reserved.
  */
 
-package pl.org.kata.test.client.core.impl;
+package pl.org.kata.test.client.core.placemanager.impl;
 
-import pl.org.kata.test.client.core.IBrowserHistory;
+import pl.org.kata.test.client.core.placemanager.IBrowserHistory;
 
 import javax.inject.Inject;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;

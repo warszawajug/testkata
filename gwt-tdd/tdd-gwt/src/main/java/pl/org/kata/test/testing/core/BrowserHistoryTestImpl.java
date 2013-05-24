@@ -1,6 +1,6 @@
 package pl.org.kata.test.testing.core;
 
-import pl.org.kata.test.client.core.IBrowserHistory;
+import pl.org.kata.test.client.core.placemanager.IBrowserHistory;
 import java.util.Stack;
 
 import javax.inject.Inject;
