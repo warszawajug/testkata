@@ -1,5 +1,6 @@
 package spockogroovy
 
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -92,6 +93,7 @@ class Chapter1SpockBasicsSpecification extends Specification {
         otherMap.clear()
     }
 
+    @Ignore('no specific solution for this exercise')
     def 'zacne asercje i komunikaty, milordzie'() {
         given:
         def anObject = new Object()
@@ -106,8 +108,6 @@ class Chapter1SpockBasicsSpecification extends Specification {
         List aList = [1, 2, 123, 462, 6, 3]
         Map aMap = [one: 'o', two: 'ooo', eight: 'oooooooo']
 
-        // TODO: try to remove assertions one by one and see failure messages for each type
-        // hint: look for the link <Click to see the difference> in the IDE console output window
         expect:
         anObject
         aBoolean
