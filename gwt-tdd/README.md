@@ -27,11 +27,12 @@ http://jukito.arcbees.com/
 * klasa wewnętrzna z modułami Guice:   public static class A extends JukitoModule
  
 ## Przykłady
-* TestApplicationFlowManager
-* TestFakePlaceManager
-* TestOnPathExitHandler
-* TestAddressWidgetPresenter
-* TestDocumentToCollectWidgetPresenter
+* RespectProvidesAnnotationInModuleTest (jukito code base)
+* RespectTestScopeWhenUsingAbstractModuleTest (jukito code base)
+* TestBrowserHistoryTestImpl
+* EnvironmentDependentModulesTest (jukito code base)
+* TestEventBusTestImpl
+
 
 ## Uwagi
 * Scope @TestSingleton jest używany domyślnie dla klas. Interfejsy są bindowane w normalnym Scope
@@ -60,10 +61,7 @@ zamiast @RunWith(JukitoRunner.class) stosujemy @RunWith(JukitoGwtTestRunner.clas
 
 ## Przykłady
 * TestAddressDataEditor - testy prostego edytora
-* TestCancellationTypeEditor - testy na edytor zbudowany jako grupa radio button'ow
-* TestComboBoxEditor - testy na edytor Enum lub String'a zbudowany jako comboBox
 * TestTwoAddressOneDriver - test bardziej złożonego edytora
-* TestSecuringTheSecureButton - test akceptacyjny dla konfiguracji uprawnień w danym wdrożeniu
  
 
 # Request Factory
