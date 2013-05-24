@@ -8,5 +8,4 @@ build
 *.iws
 out
 target
-gradle
 gradle-offline-home
