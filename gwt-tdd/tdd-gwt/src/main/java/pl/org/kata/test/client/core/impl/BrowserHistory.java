@@ -8,10 +8,10 @@ import pl.org.kata.test.client.core.IBrowserHistory;
 
 import javax.inject.Inject;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
+import com.google.web.bindery.event.shared.EventBus;
 
 public class BrowserHistory implements IBrowserHistory {
 
