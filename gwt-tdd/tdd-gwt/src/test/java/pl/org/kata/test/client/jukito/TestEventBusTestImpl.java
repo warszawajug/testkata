@@ -15,7 +15,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Przemys³aw Ga³±zka
+ * @author PrzemysÅ‚aw GaÅ‚Ä…zka
  * @since 16-05-2013
  */
 @RunWith(JukitoRunner.class)

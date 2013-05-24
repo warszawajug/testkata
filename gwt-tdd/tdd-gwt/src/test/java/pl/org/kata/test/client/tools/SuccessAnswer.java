@@ -9,7 +9,7 @@ import org.mockito.stubbing.Answer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * @author Przemys³aw Ga³±zka
+ * @author PrzemysÅ‚aw GaÅ‚Ä…zka
  * @since 06-08-2012
  */
 public class SuccessAnswer<T> implements Answer<T> {

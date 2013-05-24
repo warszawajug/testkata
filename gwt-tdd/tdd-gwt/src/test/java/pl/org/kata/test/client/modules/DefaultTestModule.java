@@ -17,9 +17,9 @@ import com.google.web.bindery.event.shared.EventBus;
 import static org.mockito.BDDMockito.*;
 
 /**
- * Modu³ binduj±cy podstawowe komponenty aplikacji dla testów JUnit
+ * ModuÅ‚ bindujÄ…cy podstawowe komponenty aplikacji dla testÃ³w JUnit
  *
- * @author Przemys³aw Ga³±zka
+ * @author PrzemysÅ‚aw GaÅ‚Ä…zka
  * @since 20-12-2012
  */
 public class DefaultTestModule extends AbstractModule {

@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HasText;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Przemys³aw Ga³±zka
+ * @author PrzemysÅ‚aw GaÅ‚Ä…zka
  * @since 21-01-2013
  */
 public class MockButton implements HasClickHandlers, HasText {

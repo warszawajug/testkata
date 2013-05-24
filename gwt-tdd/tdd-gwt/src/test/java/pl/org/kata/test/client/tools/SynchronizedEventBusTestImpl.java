@@ -8,10 +8,10 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.Event;
 
 /**
- * Najprostsza z moøliwych implementacja EventBus.
- * Kaødy fire oraz add nie jest zapisywany w kolejce lecz odpalany natychmiast
+ * Najprostsza z mo≈ºliwych implementacja EventBus.
+ * Ka≈ºdy fire oraz add nie jest zapisywany w kolejce lecz odpalany natychmiast
  *
- * @author Przemys≥aw Ga≥±zka
+ * @author Przemys≈Çaw Ga≈ÇƒÖzka
  * @since 15-05-2013
  */
 public class SynchronizedEventBusTestImpl extends

@@ -6,7 +6,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 /**
- * @author Przemys³aw Ga³±zka
+ * @author PrzemysÅ‚aw GaÅ‚Ä…zka
  * @since 16-05-2013
  */
 public class HandlerRegistrationTestImpl<H> implements HandlerRegistration {
