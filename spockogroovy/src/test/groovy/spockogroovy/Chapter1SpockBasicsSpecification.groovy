@@ -34,4 +34,14 @@ class Chapter1SpockBasicsSpecification extends Specification {
         expect:
         aList.empty
     }
+
+    def 'gdy dodamy coś do listy, to już nie jest pusta'() {
+        given:
+        List aList = []
+
+        // TODO: add something to the list, use "when" block
+
+        then:
+        aList.size() == 1
+    }
 }
