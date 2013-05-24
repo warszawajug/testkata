@@ -58,4 +58,36 @@ class Chapter1SpockBasicsSpecification extends Specification {
         expect:
         aList.empty
     }
+
+    // TODO: try to add string literals with comments after block's colon
+    def 'a na mapie sobie działamy tak'() {
+        given:
+        Map aMap
+
+        and:
+        Map otherMap = [brand: 'Audi', model: 'S5', engine: '4.2L V8']
+
+        expect:
+        aMap == null
+
+        and:
+        otherMap.size() == 3
+
+        when:
+        aMap = [:]
+
+        then:
+        aMap.isEmpty()
+
+        when:
+        aMap.putAll(otherMap)
+
+        then:
+        aMap.size() == 3
+        aMap == otherMap
+
+        cleanup:
+        aMap.clear()
+        otherMap.clear()
+    }
 }
