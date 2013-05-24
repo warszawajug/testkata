@@ -1,5 +1,7 @@
 package spockogroovy
 
+import spock.lang.Specification
+
 /*
 Although Spock uses a different terminology, many of its concepts and features are inspired from JUnit.
 
@@ -18,11 +20,10 @@ Although Spock uses a different terminology, many of its concepts and features a
     Interaction             Mock expectation (EasyMock, JMock, ...)
 */
 
-// TODO: extend the class with spock.lang.Specification
-class Chapter1SpockBasicsSpecification {
+class Chapter1SpockBasicsSpecification extends Specification {
 
-    // TODO: add 'expect' block above assertion
     def twoPlusTwoMakesFour() {
+        expect:
         assert 2 + 2 == 4
     }
 }
