@@ -115,4 +115,21 @@ class Chapter1SpockBasicsSpecification extends Specification {
         def ex = thrown(RuntimeException)
         ex.message == 'TADAM!'
     }
+
+    def 'test zparametryzowany'() {
+        given:
+        int p1 = player1.size()
+        int p2 = player2.size()
+
+        when:
+        int max = Math.max(p1, p2)
+
+        then:
+        max == expected
+
+        where:
+        player1 | player2 | expected
+        // TODO: add couple rows to the 'table'
+        // hint: check what's up with spock.lang.Unroll annotation
+    }
 }
