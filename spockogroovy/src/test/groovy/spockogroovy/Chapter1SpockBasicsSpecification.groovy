@@ -59,34 +59,35 @@ class Chapter1SpockBasicsSpecification extends Specification {
         aList.empty
     }
 
-    // TODO: try to add string literals with comments after block's colon
     def 'a na mapie sobie działamy tak'() {
-        given:
+        given: 'mając zadeklarowaną mapę'
         Map aMap
 
-        and:
+        and: 'oraz drugą mapę z trzema wartościami'
         Map otherMap = [brand: 'Audi', model: 'S5', engine: '4.2L V8']
 
-        expect:
+        expect: 'spodziewamy się, że zadeklarowana mapa będzie nullem'
         aMap == null
 
-        and:
+        and: 'natomiast mapa z wartościami będzie miała rozmiar równy trzy'
         otherMap.size() == 3
 
-        when:
+        when: 'kiedy zainicjalizujemy pierwszą mapę'
         aMap = [:]
 
-        then:
+        then: 'będzie ona pusta'
         aMap.isEmpty()
 
-        when:
+        when: 'a gdy wstawimy wszystkie wartości z drugiej mapy, do pierwszej'
         aMap.putAll(otherMap)
 
-        then:
+        then: 'to ta pierwsza mapa również będzie rozmiaru trzy'
         aMap.size() == 3
+
+        and: 'oraz będzie mieć taką samą zawartość jak druga mapa'
         aMap == otherMap
 
-        cleanup:
+        cleanup: 'zaś na koniec sobie wyczyścimy obie mapy'
         aMap.clear()
         otherMap.clear()
     }
