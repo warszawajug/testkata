@@ -5,6 +5,7 @@
 
 target
 bin
+maven-offline-repository
 
 # Eclipse metadata
 .classpath
