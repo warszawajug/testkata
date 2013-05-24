@@ -16,6 +16,7 @@
   <modules>
     <module>caliper</module>
     <module>FestHamcrestKata</module>
+    <module>tdd-gwt</module>
   </modules>
 
 </project>
