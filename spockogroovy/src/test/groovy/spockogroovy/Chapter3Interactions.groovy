@@ -54,4 +54,15 @@ class Chapter3Interactions extends Specification {
         1 * personDaoMock.findById(415) >> person
     }
 
+    def 'szpiegowanie na prawdziwym obiekcie'() {
+        given:
+        Person person = Spy(Person)
+
+        when:
+        // TODO: call setter to satisfy interaction condition
+
+        then:
+        1 * person.setName(_)
+    }
+
 }
