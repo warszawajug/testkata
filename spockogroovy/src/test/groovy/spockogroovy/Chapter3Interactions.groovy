@@ -71,7 +71,8 @@ class Chapter3Interactions extends Specification {
 
         when:
         person.getId()
-        // TODO: call at least three times anything on person spy
+        person.setName('Radosław')
+        person.setAge(38)
 
         then:
         (3.._) * person._(*_) // at least three calls with any parameters
