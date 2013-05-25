@@ -30,4 +30,16 @@ class Chapter3Interactions extends Specification {
         3 * personDaoMock.findById(_)
     }
 
+    def 'sprawdzenie braku interakcji'() {
+        given:
+        Person person = new Person('Matt', 27)
+
+        when:
+        personService.save(person)
+
+        then:
+        1 * personDaoMock.update(_) // TODO: change condition to ensure update wasn't called
+        1 * personDaoMock.create('Matt', 27)
+    }
+
 }
