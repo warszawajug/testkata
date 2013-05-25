@@ -19,4 +19,15 @@ class Chapter3Interactions extends Specification {
         1 * personDaoMock.findAllOlderThan(18)
     }
 
+
+    def 'sprawdzenie interakcji z dowolnym parametrem'() {
+        when:
+        personService.get(5)
+        personService.get(10)
+        personService.get(15)
+
+        then:
+        3 * personDaoMock.findById(5) // TODO: change parameter requirement
+    }
+
 }
