@@ -1,0 +1,50 @@
+package pl.org.kata.test.fest.assertions.assertions;//package pl.org.kata.test.fest.assertions.assertions;/**
+
+import com.google.common.collect.Lists;
+import java.util.List;
+import org.fest.assertions.Assertions;
+import org.fest.assertions.GenericAssert;
+import pl.org.kata.test.fest.sample.card.Card;
+import pl.org.kata.test.fest.sample.card.CardDeck;
+import pl.org.kata.test.fest.sample.card.CardSuit;
+
+public class DeckOfCardsAssertions extends GenericAssert<DeckOfCardsAssertions, CardDeck>{
+
+	/**
+	 * Creates a new <code>{@link org.fest.assertions.GenericAssert}</code>.
+	 *
+	 * @param actual   the actual value to verify.
+	 */
+	private DeckOfCardsAssertions(final CardDeck actual) {
+		super(DeckOfCardsAssertions.class, actual);
+	}
+
+	public static DeckOfCardsAssertions assertThat(CardDeck cardDeck) {
+		return new DeckOfCardsAssertions(cardDeck);
+	}
+
+	public DeckOfCardsAssertions nextCardsAreOrderedInSuit(int numberOfCards, CardSuit cardSuit) {
+		List<Card> part = getElements(numberOfCards);
+		CardListAssertion.assertThat(part).containsOnlyCardsInSuit(cardSuit).cardsAreSortedIncrementally().doesNotHaveDuplicates();
+		return this;
+	}
+
+	private List<Card> getElements(final int numberOfCards) {
+		List<Card> foundCards = Lists.newArrayList();
+		while (foundCards.size() < numberOfCards) {
+			deckIsNotEmpty();
+			foundCards.add(actual.getOneFromTheTop());
+		}
+		return foundCards;
+	}
+
+	public DeckOfCardsAssertions deckIsNotEmpty() {
+		Assertions.assertThat(actual.areAnyCardsLeft()).overridingErrorMessage("Deck should not be empty yet").isTrue();
+		return this;
+	}
+
+	public DeckOfCardsAssertions deckIsEmpty() {
+		Assertions.assertThat(actual.areAnyCardsLeft()).overridingErrorMessage("Deck should be empty by now").isFalse();
+		return this;
+	}
+}

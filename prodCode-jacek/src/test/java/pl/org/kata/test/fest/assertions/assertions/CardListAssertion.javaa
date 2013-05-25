@@ -1,0 +1,45 @@
+package pl.org.kata.test.fest.assertions.assertions;
+
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
+import java.util.List;
+import org.fest.assertions.Assertions;
+import org.fest.assertions.GenericAssert;
+import pl.org.kata.test.fest.sample.card.Card;
+import pl.org.kata.test.fest.sample.card.CardSuit;
+import pl.org.kata.test.fest.sample.card.CardFunctions;
+
+public class CardListAssertion extends GenericAssert<CardListAssertion, List<Card>> {
+
+	/**
+	 * Creates a new <code>{@link org.fest.assertions.GenericAssert}</code>.
+	 *
+	 * @param actual the actual value to verify.
+	 */
+	private CardListAssertion(final List<Card> actual) {
+		super(CardListAssertion.class, actual);
+	}
+
+	public static CardListAssertion assertThat(final List<Card> cards) {
+		return new CardListAssertion(cards);
+	}
+
+	public CardListAssertion containsOnlyCardsInSuit(final CardSuit cardSuit) {
+		Assertions.assertThat(Iterables.all(actual, Predicates.compose(Predicates.equalTo(cardSuit), CardFunctions.TO_SUITE_FUNCTION))).overridingErrorMessage(
+				"Not every element [" + actual + "] is in " + cardSuit).isTrue();
+		return this;
+	}
+
+	public CardListAssertion cardsAreSortedIncrementally() {
+		Assertions.assertThat(Ordering.natural().onResultOf(CardFunctions.TO_RANK_FUNCTION).isStrictlyOrdered(actual)).overridingErrorMessage(
+				"Cards [" + actual + "] are not strictly ordered").isTrue();
+		return this;
+	}
+
+	public CardListAssertion doesNotHaveDuplicates(){
+		Assertions.assertThat(actual).doesNotHaveDuplicates().as("There were some duplicates in card list");
+		return this;
+	}
+
+}

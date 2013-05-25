@@ -1,0 +1,45 @@
+package pl.org.kata.test.fest.assertions.assertions;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.testng.AssertJUnit.fail;
+
+import com.google.common.collect.Lists;
+import java.util.List;
+import org.junit.Test;
+import pl.org.kata.test.fest.sample.card.Card;
+import pl.org.kata.test.fest.sample.card.CardSuit;
+
+public class CardListAssertionTest {
+
+	private static final CardSuit TEST_CARD_SUIT = CardSuit.CLUB;
+
+	private static final CardSuit TEST_OTHER_CARD_SUIT = CardSuit.DIAMOND;
+
+	@Test
+	public void shouldCheckIfAllCardsAreInSameSuit() {
+
+		//given
+		List<Card> cards = Lists.newArrayList(cardInSuit(TEST_CARD_SUIT), cardInSuit(TEST_CARD_SUIT), cardInSuit(TEST_OTHER_CARD_SUIT));
+
+		//when
+		try {
+			CardListAssertion.assertThat(cards).containsOnlyCardsInSuit(TEST_CARD_SUIT);
+			fail("should explode");
+		} catch (org.junit.ComparisonFailure e) {
+
+			//then
+			assertThat(e).isExactlyInstanceOf(org.junit.ComparisonFailure.class);
+		}
+
+	}
+
+	private Card cardInSuit(final CardSuit cardSuit) {
+
+		final Card card = mock(Card.class);
+		given(card.getCardSuit()).willReturn(cardSuit);
+		return card;
+	}
+
+}
