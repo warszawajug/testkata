@@ -3,7 +3,6 @@ package spockogroovy
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import spock.lang.Ignore
 import spock.lang.Specification
 
 // ref: http://groovy.codehaus.org/gapi/groovy/json/JsonBuilder.html
@@ -14,7 +13,6 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adjust 'when' block")
     def 'create simple JSON'() {
 
         given:
@@ -25,6 +23,7 @@ class Chapter6GroovyJsonSpecification extends Specification {
         builder.person {
             name personInstance.name // skipped parenthesis, but it's a method call with single parameter
             age personInstance.age
+            address addressMap
         }
 
         then:
@@ -35,14 +34,13 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adjust right side of the statement at 'when' block")
     def 'Generate JSON from list of objects'() {
 
         given:
         List personList = [new Person('Ana', 24), new Person('George', 41), new Person('Hugh', 32)]
 
         when:
-        builder.content = [:]
+        builder.content = [people: personList]
 
         then:
         builder.toPrettyString() == '''{
@@ -69,7 +67,6 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adjust right side of the statement at 'when' block")
     def 'generate JSON from database'() {
 
         given:
@@ -77,7 +74,7 @@ class Chapter6GroovyJsonSpecification extends Specification {
         def query = 'SELECT id AS "id", name as "name" FROM brand ORDER BY id'
 
         when:
-        builder.content
+        builder.content = [brands: sql.rows(query)]
 
         then:
         builder.toPrettyString() == '''{
@@ -109,7 +106,6 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: add some code to the 'when' block")
     def 'generate JSON from database with column value as JSON key'() {
 
         given:
@@ -120,7 +116,10 @@ class Chapter6GroovyJsonSpecification extends Specification {
         when:
         builder.vehicles {
             sql.eachRow(brandsQuery) { brand ->
-                // hint: obj."$variable"() can be used to dynamically call a method
+                def rows = sql.rows(vehiclesQuery, brand.id)
+                if (rows) {
+                    "$brand.name" rows
+                }
             }
         }
 
@@ -170,7 +169,7 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adjust 'when' block")
+    /* exercise: adjust 'when' block */
     def 'convert JSON to maps and lists'() {
 
         given:
@@ -197,7 +196,7 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
         when:
         def json = slurper.parseText(jsonString)
-        def animals // hint: json object is a Map already
+        def animals = json.animals
 
         then:
         animals == [
@@ -210,7 +209,6 @@ class Chapter6GroovyJsonSpecification extends Specification {
 
 
 
-    @Ignore("exercise: fill personList with objects from JSON at 'when' block")
     def 'convert JSON to objects'() {
 
         given:
@@ -235,7 +233,9 @@ class Chapter6GroovyJsonSpecification extends Specification {
         when:
         def json = slurper.parseText(jsonString)
         def personList = []
-        // hint: named parameters can reduce necessary code amount
+        json.people.each {
+            personList << new Person(it)
+        }
 
         then:
         personList == [new Person('Ana', 24), new Person('George', 41), new Person('Hugh', 32)] // Person class has customized equals() method
