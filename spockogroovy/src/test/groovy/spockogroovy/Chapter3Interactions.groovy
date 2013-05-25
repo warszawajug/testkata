@@ -51,7 +51,7 @@ class Chapter3Interactions extends Specification {
         personService.save(person)
 
         then:
-        1 * personDaoMock.findById(415) // TODO: mock return value with right shift operator
+        1 * personDaoMock.findById(415) >> person
     }
 
 }
