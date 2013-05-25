@@ -42,4 +42,16 @@ class Chapter3Interactions extends Specification {
         1 * personDaoMock.create('Matt', 27)
     }
 
+    def 'sprawdzenie interakcji i zamockowanie jednocześnie'() {
+        given:
+        Person person = new Person('Jane', 21)
+        person.id = 415
+
+        when:
+        personService.save(person)
+
+        then:
+        1 * personDaoMock.findById(415) // TODO: mock return value with right shift operator
+    }
+
 }
