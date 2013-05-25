@@ -89,7 +89,7 @@ class Chapter3Interactions extends Specification {
         person.age = 15
 
         then:
-        (_..3) * person._(*_) // TODO: modify method call constraint - use regular expression
+        (_..3) * person./get.*/() // TODO: modify method call constraint - use regular expression
     }
 
 }
