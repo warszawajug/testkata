@@ -13,8 +13,7 @@ class Chapter3Interactions extends Specification {
 
     def 'sprawdzenie interakcji z parametrem'() {
         when:
-        // TODO: call personService for adults to satisfy interaction check
-        personService
+        personService.allAdults
 
         then:
         1 * personDaoMock.findAllOlderThan(18)
