@@ -38,7 +38,7 @@ class Chapter3Interactions extends Specification {
         personService.save(person)
 
         then:
-        1 * personDaoMock.update(_) // TODO: change condition to ensure update wasn't called
+        0 * personDaoMock.update(_)
         1 * personDaoMock.create('Matt', 27)
     }
 
