@@ -59,7 +59,7 @@ class Chapter3Interactions extends Specification {
         Person person = Spy(Person)
 
         when:
-        // TODO: call setter to satisfy interaction condition
+        person.name = 'Dżordż'
 
         then:
         1 * person.setName(_)
