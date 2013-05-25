@@ -78,4 +78,18 @@ class Chapter3Interactions extends Specification {
         (3.._) * person._(*_) // at least three calls with any parameters
     }
 
+    def 'maks trzy wywołania dowolnego gettera na mocku/szpiegu'() {
+        given:
+        Person person = Spy(Person)
+
+        when:
+        person.id
+        person.name
+        person.age
+        person.age = 15
+
+        then:
+        (_..3) * person._(*_) // TODO: modify method call constraint - use regular expression
+    }
+
 }
