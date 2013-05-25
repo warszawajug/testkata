@@ -27,7 +27,7 @@ class Chapter3Interactions extends Specification {
         personService.get(15)
 
         then:
-        3 * personDaoMock.findById(5) // TODO: change parameter requirement
+        3 * personDaoMock.findById(_)
     }
 
 }
