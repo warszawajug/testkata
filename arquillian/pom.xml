@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>pl.wjug.testkata</groupId>
-  <artifactId>testkata-master</artifactId>
+  <artifactId>arquillian</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   
@@ -14,12 +14,8 @@
   </properties> 
   
   <modules>
-    <module>caliper</module>
-    <module>FestHamcrestKata</module>
-    <module>tdd-gwt</module>
-    <module>testng-marek</module>
-    <module>tdd-krzysztof</module>
-    <module>arquillian</module>
+    <module>web</module>
+    <module>service</module>
   </modules>
 
 </project>
