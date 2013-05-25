@@ -4,7 +4,6 @@ import groovy.sql.Sql
 import groovy.util.slurpersupport.NodeChild
 import groovy.xml.MarkupBuilder
 import org.xml.sax.XMLReader
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class Chapter5GroovyXmlSpecification extends Specification {
@@ -19,7 +18,6 @@ class Chapter5GroovyXmlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: fix XML generation at 'when' block")
     def 'creating RSS feed'() {
 
         given: 'example with list of maps, but any other objects can be used'
@@ -30,13 +28,14 @@ class Chapter5GroovyXmlSpecification extends Specification {
         ]
 
         when:
-        xml.rss(version: '1.0') {
+        xml.rss(version: '2.0') {
             channel {
                 title('The RSS Title')
+                link('http://url.to.the.website.com')
                 description('The Groovy generated feed :)')
                 articles.each { article ->
                     xml.item {
-                        tilte(article.title)
+                        title(article.title)
                         link(article.url)
                         description(article.brief)
                     }
@@ -72,7 +71,6 @@ class Chapter5GroovyXmlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: fill Closure body at 'when' block to generate expected XML")
     def 'generate XML from database'() {
 
         given:
@@ -80,9 +78,13 @@ class Chapter5GroovyXmlSpecification extends Specification {
         def query = '''SELECT vehicle.id, model, brand_id, name AS brand FROM vehicle INNER JOIN brand
                         ON (vehicle.brand_id = brand.id) ORDER BY id'''
 
-        when: // hint: row['column_name'] notation will help with 'brand_id'
+        when:
         xml.vehicles {
-
+            sql.eachRow(query) { row ->
+                xml.vehicle(id: row.id, model: row.model) {
+                    brand(id: row['brand_id'], row.brand)
+                }
+            }
         }
 
         then:
@@ -114,7 +116,6 @@ class Chapter5GroovyXmlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: fix 'when' block to provide expected map structures")
     def 'process RSS feed into list of maps'() {
 
         given:
@@ -127,10 +128,10 @@ class Chapter5GroovyXmlSpecification extends Specification {
             result << [
                     title: it.title.text(),
                     url: it.link.text(),
-                    date: it.pubDate.text()
+                    about: it.description.text()
             ]
         }
-        def rssVersion // hint: use @ to access tag attribute
+        def rssVersion = rss.@version
 
         then:
         result == [
@@ -157,7 +158,6 @@ class Chapter5GroovyXmlSpecification extends Specification {
 
 
 
-    @Ignore('exercise: find HTML table rows with GPath')
     def 'calculate average value from HTML table'() {
 
         given:
@@ -167,7 +167,7 @@ class Chapter5GroovyXmlSpecification extends Specification {
         NodeChild html = slurper.parse(htmlFile)
 
         when:
-        def tableRows // hint: GPath is like XPath but with indexes from zero
+        def tableRows = html.body.table[3].tr.td.table[2].tr
         tableRows = tableRows[1..tableRows.size() - 1] // removing table header
         List exchangeRates = tableRows.collect { NodeChild node ->
             node.td[1].text().toFloat()
