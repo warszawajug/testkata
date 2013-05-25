@@ -1,7 +1,6 @@
 package spockogroovy
 
 import groovy.sql.Sql
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -25,7 +24,6 @@ class Chapter4GroovySqlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adjust Closure body at 'when' block")
     def 'select multiple rows'() {
 
         given:
@@ -34,7 +32,7 @@ class Chapter4GroovySqlSpecification extends Specification {
 
         when:
         sql.eachRow(query) {
-
+            brandNames << it.name
         }
 
         then:
@@ -44,11 +42,10 @@ class Chapter4GroovySqlSpecification extends Specification {
 
 
 
-    @Ignore('exercise: adapt SQL query with WHERE clause')
     def 'select one row with GString (SQL injection safe!)'() {
 
         given:
-        def query = "SELECT id, name FROM brand " // hint: $ variable may be helpful
+        def query = "SELECT id, name FROM brand WHERE name = $brandName"
 
         when:
         def row = sql.firstRow(query)
@@ -61,17 +58,16 @@ class Chapter4GroovySqlSpecification extends Specification {
         brandId | brandName
         1       | 'Ford'
         2       | 'Mercedes'
-        null    | /Ford' AND 1=(SELECT COUNT(*) FROM users); --/ // hint: 'SQLException: Table "USERS" not found' will be thrown if SQL injection has succeed :(
+        null    | /Ford' AND 1=(SELECT COUNT(*) FROM users); --/
     }
 
 
 
 
-    @Ignore('exercise: adapt SQL query')
     def 'select a single value'() {
 
         given:
-        String query = 'SELECT COUNT (id) FROM vehicle' // hint: use SQL 'AS' keyword
+        String query = 'SELECT COUNT (id) AS amount FROM vehicle'
 
         when:
         def row = sql.firstRow(query)
@@ -83,18 +79,17 @@ class Chapter4GroovySqlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: adapt executeInsert() method call at 'when' block")
     def 'insert a row with parameters list'() {
 
         given:
         int rowCount = countRowsOfTable('vehicle')
-        String query = 'INSERT INTO vehicle(model, released, brand_id) VALUES(?, ?, ?)' // hint: question mark is parameter placeholder
+        String query = 'INSERT INTO vehicle(model, released, brand_id) VALUES(?, ?, ?)'
         Date released = new Date()
         int brandId = findBrandIdByName('Subaru')
         String model = 'Impreza'
 
         when:
-        sql.executeInsert(query)
+        sql.executeInsert(query, model, released, brandId)
 
         then:
         countRowsOfTable('vehicle') == rowCount + 1
@@ -103,12 +98,11 @@ class Chapter4GroovySqlSpecification extends Specification {
 
 
 
-    @Ignore('exercise: adapt SQL query with VALUES clause')
     def 'insert a row with named parameters'() {
 
         given:
         int rowCount = countRowsOfTable('vehicle')
-        def query = 'INSERT INTO vehicle(model, released, brand_id) VALUES(:model, :released, :brandId)' // hint: there is notation like :paramName
+        def query = 'INSERT INTO vehicle(model, released, brand_id) VALUES(:model, :released, :brandId)'
         def params = [
                 brandId: findBrandIdByName('Ford'),
                 model: 'Puma',
@@ -126,19 +120,18 @@ class Chapter4GroovySqlSpecification extends Specification {
 
 
 
-    @Ignore("exercise: call proper method on sql object at 'when' block")
     def 'delete a single row'() {
 
         given:
-            int rowCount = countRowsOfTable('brand')
-            int vehicleId = 5
-            String query = 'DELETE FROM brand WHERE id = ?'
+        int rowCount = countRowsOfTable('brand')
+        int vehicleId = 5
+        String query = 'DELETE FROM brand WHERE id = ?'
 
         when:
-        sql
+        sql.execute(query, vehicleId)
 
         then:
-            countRowsOfTable('brand') == rowCount - 1
+        countRowsOfTable('brand') == rowCount - 1
     }
 
 
