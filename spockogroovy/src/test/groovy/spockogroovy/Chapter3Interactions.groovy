@@ -65,4 +65,16 @@ class Chapter3Interactions extends Specification {
         1 * person.setName(_)
     }
 
+    def 'co najmniej trzy dowolne interakcje na mocku/szpiegu'() {
+        given:
+        Person person = Spy(Person)
+
+        when:
+        person.getId()
+        // TODO: call at least three times anything on person spy
+
+        then:
+        (3.._) * person._(*_) // at least three calls with any parameters
+    }
+
 }
