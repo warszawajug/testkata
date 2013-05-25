@@ -77,4 +77,17 @@ class Chapter2EasyMocking extends Specification {
         resultId == 40
     }
 
+    def 'mock static method'() {
+        given:
+        GroovyMock(StringGenerator, global: true)
+        // TODO: mock static method the same way as previously with right shift operator
+
+        when:
+        def result = StringGenerator.multiplyString('be', 5)
+
+        then:
+        noExceptionThrown()
+        result == 'bebebebebe'
+    }
+
 }
