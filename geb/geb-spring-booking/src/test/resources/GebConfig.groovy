@@ -6,7 +6,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
 
 waiting { timeout = 5 }
 driver = { new FirefoxDriver() }
-reportsDir = "target/geb-reports"
+reportsDir = "target/geb-reports-${System.currentTimeMillis()}"
 baseUrl = "http://localhost:8080/booking-mvc/"
 
 // To run the tests with all browsers just run “./gradlew test”
